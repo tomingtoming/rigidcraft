@@ -31,7 +31,8 @@ const PALETTE: Record<string, number> = {
 interface TileView {
   tile: TileInstance;
   mesh: THREE.Mesh;
-  material: THREE.MeshStandardMaterial;
+  material: THREE.MeshToonMaterial;
+  outline: THREE.LineSegments<THREE.EdgesGeometry, THREE.LineBasicMaterial>;
   dynamicColor: boolean;
   dynamicAlpha: boolean;
 }
@@ -138,6 +139,8 @@ export class SceneView {
   selectionBox: THREE.BoxHelper | null = null;
   /** read by the browser probes (tools/) */
   views = new Map<number, TileView>();
+  private bands = new THREE.DataTexture(new Uint8Array([48, 110, 210, 255]), 4, 1, THREE.RedFormat);
+  private edgeGeometry = new Map<THREE.BufferGeometry, THREE.EdgesGeometry>();
   private plateGeo = new THREE.BoxGeometry(TILE, TILE_T, TILE);
   // a tyre is drawn as a short cylinder (0.12 m wide) with a pale spoke; the physics sphere has the same radius
   private wheelGeo = new THREE.CylinderGeometry(TILE / 2, TILE / 2, TILE * 0.2, 24);
@@ -212,12 +215,14 @@ export class SceneView {
     this.directionOverlay.classList.add('attachment-directions');
     this.directionOverlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:hidden;display:none';
     canvas.parentElement?.append(this.directionOverlay);
+    this.bands.minFilter = this.bands.magFilter = THREE.NearestFilter;
+    this.bands.needsUpdate = true;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.scene.background = new THREE.Color(0xdfe7ee);
-    this.scene.fog = new THREE.Fog(0xdfe7ee, 60, 220);
+    this.scene.background = new THREE.Color(0xe7edf1);
+    this.scene.fog = new THREE.Fog(0xe7edf1, 60, 220);
     this.camera = new THREE.PerspectiveCamera(50, 1, 0.1, 500);
 
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.9));
@@ -302,12 +307,15 @@ export class SceneView {
   rebuild(tiles: TileInstance[], env: ValEnv): void {
     this.setLines3d([]); this.syncProjectiles([]);
     this.selectTile(null);
-    for (const v of this.views.values()) v.material.dispose();
+    for (const v of this.views.values()) {
+      v.material.dispose();
+      v.outline.material.dispose();
+    }
     this.group.clear();
     this.views.clear();
     for (const t of tiles) {
       const geo = t.spec.wheel ? this.wheelGeo : t.type === 'cowl' ? cowlGeometry(t.option, t.dir, this.cowlGeos) : this.plateGeo;
-      const material = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.1 });
+      const material = new THREE.MeshToonMaterial({ gradientMap: this.bands });
       if (t.type === 'cowl') material.side = THREE.DoubleSide;
       const mesh = new THREE.Mesh(geo, material);
       mesh.castShadow = true;
@@ -324,7 +332,16 @@ export class SceneView {
         material.emissive.setHex(0xff5a00);
         material.emissiveIntensity = 0;
       }
+      let edges = this.edgeGeometry.get(geo);
+      if (!edges) {
+        edges = new THREE.EdgesGeometry(geo, 24);
+        this.edgeGeometry.set(geo, edges);
+      }
+      const outline = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x31243b }));
+      outline.raycast = () => {}; // Selection follows the part surface, including in narrow gaps.
+      mesh.add(outline);
       const view: TileView = {
+        outline,
         tile: t,
         mesh,
         material,
@@ -333,10 +350,7 @@ export class SceneView {
       };
       this.applyColor(view, env);
       this.applyAlpha(view, env);
-      if (t.ghost) {
-        material.transparent = true;
-        material.opacity = 0.35;
-      }
+
       this.group.add(mesh);
       this.views.set(t.id, view);
     }
@@ -462,13 +476,15 @@ export class SceneView {
   /** effect=#PQRS on a Cowl: P is transparency (0 opaque … F invisible) */
   private applyAlpha(v: TileView, env: ValEnv): void {
     const t = v.tile;
-    if (t.type !== 'cowl' || !t.effectExpr) return;
-    const e = Math.floor(evalExpr(t.effectExpr, env));
-    if (!Number.isFinite(e) || e < 0x1000) return; // fewer than 4 hex digits: P is 0
-    const p = (e >> 12) & 0xf;
-    const opacity = 1 - p / 15;
-    v.material.transparent = opacity < 1;
-    v.material.opacity = opacity;
+    const effect = t.type === 'cowl' && t.effectExpr ? Math.floor(evalExpr(t.effectExpr, env)) : 0;
+    const transparency = effect >= 0x1000 ? (effect >> 12) & 0xf : 0;
+    const opacity = t.ghost ? 0.35 : 1 - transparency / 15;
+    for (const material of [v.material, v.outline.material]) {
+      material.opacity = opacity;
+      material.transparent = opacity < 1;
+      material.depthWrite = opacity === 1;
+    }
+    v.outline.visible = opacity > 0;
   }
 
   /** re-evaluate colors / transparency that depend on Val variables */
@@ -495,7 +511,7 @@ export class SceneView {
   setScenario(s: Scenario | null): void {
     const bounds = s?.terrainBounds;
     const span = bounds ? Math.max(bounds[1] - bounds[0], bounds[3] - bounds[2]) : 0;
-    this.scene.fog = new THREE.Fog(0xdfe7ee, Math.max(60, span * 0.24), Math.max(220, span * 1.1));
+    this.scene.fog = new THREE.Fog(0xe7edf1, Math.max(60, span * 0.24), Math.max(220, span * 1.1));
     this.camera.far = Math.max(500, span * 1.6);
     this.camera.updateProjectionMatrix();
     for (const m of [...this.courseMeshes, ...this.crateMeshes]) m.visible = !s;

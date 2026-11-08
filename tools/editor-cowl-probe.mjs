@@ -25,5 +25,18 @@ try {
  await page.selectOption('#part-option','5');
  await page.click('#run');await page.waitForFunction(()=>window.__sim?.assembly?.tiles[1]?.option===5);
  assert.equal(await page.evaluate(()=>window.__sim.assembly.tiles[1].type),'cowl');
+ await page.click('#build');
+ await page.fill('#source','Val { ALPHA(default=0,min=0,max=65535,step=0) } Key {} Body { Core(){ N:Cowl(effect=ALPHA){} } } Lua { function OnFrame() end }');
+ await page.click('#run');
+ await page.waitForFunction(()=>window.__sim?.env('ALPHA')===0);
+ for(const [effect,opacity] of [[61440,0],[32768,7/15],[0,1]]){
+   const result=await page.evaluate(n=>window.__sim.evalLua('ALPHA='+n),effect);
+   assert.ok(result.ok,result.text);
+   await page.waitForFunction(expected=>{
+     const part=window.__scene.views.get(1);
+     return part?.material.isMeshToonMaterial && Math.abs(part.material.opacity-expected)<1e-6 &&
+       part.outline.material.opacity===part.material.opacity && part.outline.visible===(expected>0);
+   },opacity);
+ }
  console.log('Cowl: eight GUI options, six distinct meshes, plate variants, Undo/Redo and runtime option pass');
 }finally{await browser.close();}

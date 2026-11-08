@@ -57,7 +57,7 @@ try {
     const floorColor = floor.material.color.clone();
     window.restoreFloor=()=>{floor.material.map=null;floor.material.color.copy(floorColor);floor.material.needsUpdate=true;};
     const looks = views.map((v,i)=>{
-      const paint=original[i].clone();
+      const paint=new THREE.MeshStandardMaterial({color:original[i].color,side:original[i].side,transparent:original[i].transparent,opacity:original[i].opacity});
       paint.roughness=0.18; paint.metalness=0.58; paint.envMap=reflection; paint.envMapIntensity=1.25;
       const cel=new THREE.MeshToonMaterial({color:paint.color,gradientMap:bands});
       const paper=new THREE.MeshBasicMaterial({color:paint.color.clone().lerp(new THREE.Color(0xe9f4f7),0.72)});
@@ -65,7 +65,7 @@ try {
       return [paint,cel,paper];
     });
     window.previewLook = mode=>{
-      views.forEach((v,i)=>{v.mesh.material=looks[i][mode];edges[i].visible=mode!==0;});
+      views.forEach((v,i)=>{v.outline.visible=false;v.mesh.material=looks[i][mode];edges[i].visible=mode!==0;});
       floor.material.map=mode===2?graph:null;floor.material.needsUpdate=true;
       ink.color.setHex(mode===2?0x17496b:0x31243b);
       floor.material.color.copy(mode===2?new THREE.Color(0xbfd5e2):mode===0?new THREE.Color(0xdbc9a8):floorColor);

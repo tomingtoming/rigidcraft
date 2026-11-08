@@ -2446,3 +2446,16 @@ capture freezes its transform during the comparison. Separately, the airborne
 wing fixture removes the runway and records physical wing heights alongside
 velocity. Its four measurements point to broadside drag as the larger discrepancy
 in that fixture. Shallow-incidence flight needs its own measurement.
+
+## 2026-11-09 — Adopt the cel-shaded model style
+
+The selected preview now drives build and play: four lighting bands and dark
+edges on each tile against the pale sky. Tile colours and jet glow still update
+on the live material. Edges share geometry across parts and follow the mesh
+opacity. They do not participate in picking.
+
+Retrospective: the static preview hid a runtime case. Returning a Cowl effect
+from transparent to a value below 0x1000 now restores opacity on both face and
+outline. The browser probe exercises fully transparent, partial and opaque in
+sequence. The colour/edit/share and stock plane flight probes and 217 unit tests
+pass.
