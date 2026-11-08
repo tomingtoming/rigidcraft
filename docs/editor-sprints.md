@@ -2432,3 +2432,17 @@ Retrospective: the 55–75 m/s taper failed the takeoff drift and landing sink
 checks. The 60–80 trial still failed the banked-flight test. The 65–85 range
 passed the existing takeoff, banking and landing requirements. A browser-core
 regression now checks cruise speed and the return to full jet power on C.
+
+## 2026-11-08 — Compare three rendering styles, then isolate airborne forces
+
+The style-comparison tool captures the stock plane in build mode with attachment
+marks and in a paused flight with identical camera matrices within each row.
+Three, toon bands/edge lines, a studio reflection and a paper grid are rendered
+in the real WebGL scene. Run node tools/style-comparison.mjs with a screenshot
+directory. The materials are preview choices pending the player's decision.
+
+Retrospective: a paused simulation still lets the chase camera settle, so the
+capture freezes its transform during the comparison. Separately, the airborne
+wing fixture removes the runway and records physical wing heights alongside
+velocity. Its four measurements point to broadside drag as the larger discrepancy
+in that fixture. Shallow-incidence flight needs its own measurement.

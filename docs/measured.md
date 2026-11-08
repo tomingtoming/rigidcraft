@@ -807,3 +807,26 @@ and 299.9 at 60 s with 20,000 commanded power. At 60,000 it reaches 304.0 km/h
 at both points. C gives direct throttle and manual control. The 65/85 settings
 are training-plane design choices. The engine's independently measured model
 translation ceiling is 140 m/s.
+
+## 2026-11-08 — Free airborne wing pair
+
+A core with two flat 9,000-power jets and two symmetric horizontal Chip wings
+rises with gravity disabled after frame one. Vary only air (A=0/1) and wing
+spring (1/0.2, damper 0.5, commanded angle zero). Both wing parents stayed
+attached and core height exceeded 2 m throughout frames 30–90 in every run.
+The average wing centre height relative to the core measures vertical
+deflection, including any joint translation. Frame 60 observations:
+
+| Air | Spring | B26 / Snap local upward speed (m/s) | B26 / Snap wing height relative to core (mm) |
+| --- | ---: | ---: | ---: |
+| Off | 1 | 39.899 / 39.910 | -0.2 / 0.0 |
+| Off | 0.2 | 39.897 / 39.909 | -0.4 / -1.0 |
+| On | 1 | 11.930 / 7.905 | -1.1 / 0.0 |
+| On | 0.2 | 11.927 / 7.906 | -1.6 / -1.9 |
+
+The large difference appears with airflow broadside to the plates and remains
+at both stiffnesses. For this fixture, the next parameter to investigate is
+the high-incidence aerodynamic force. The test covers the whole model, including
+the core plate. It does not determine lift at shallow incidence on a cruising
+plane. Reproduce with tools/orig-harness/wing-probe.py and a fresh private output
+directory. Raw observations: wing-air-spring-20261108 under the private runs.

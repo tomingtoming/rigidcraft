@@ -9,8 +9,11 @@ fn main() {
     let gravity = if args.get(4).is_some_and(|s| s == "thrust" || s == "fixed-plane") { 0 } else { 1 };
     let mut sim = Simulation::load(&source, PhysicsOptions { no_course: true, gravity: -9.8, ..Default::default() }).unwrap();
     for (key, value) in [("U", u), ("A", air), ("G", 1), ("E", 1)] { sim.state_mut().world.regulations.insert(key.into(), value as f64); }
+    // Optional chip indices for measuring the height of articulated parts.
+    let probes: Vec<usize> = args.iter().skip(5).map(|arg| arg.parse().expect("chip index")).collect();
     let count = sim.api("_CHIPS", &[]) as usize;
     print!("frame,y,vy,h,z,vz,pitch,x,yaw,vx,roll,weight");
+    for chip in &probes { assert!(*chip < count); print!(",y{chip}"); }
     for c in 0..count { print!(",parent{c}"); } println!();
     for frame in 1..=frames {
         // The original scenario changes G after the first observed frame.
@@ -21,6 +24,7 @@ fn main() {
             print!(",{}",sim.api(key,&[0.0]));
         }
         print!(",{}",sim.api("_WEIGHT",&[]));
+        for chip in &probes { print!(",{}", sim.api("_Y", &[*chip as f64])); }
         for c in 0..count { print!(",{}",sim.api("_PARENT",&[c as f64])); } println!();
     }
 }
