@@ -53,11 +53,12 @@ Lua
   -- Plates lift little near zero angle of attack, so without this loop the plane neither holds pitch nor roll.
   local KP, KD, KR, KRD = 4, 1, 1, 0.3
   local lastP, lastR, lastY = 0, 0, nil
-  local trim = 8
+  local takeoffTrim = 8.25
+  local trim = takeoffTrim
   function OnFrame()
     if _KEYDOWN(6) > 0 then
       ASSIST = 1 - ASSIST
-      trim = 8
+      trim = takeoffTrim
     end
     local y = _Y(0)
     local vy = lastY and (y - lastY) * 30 or 0
@@ -69,7 +70,7 @@ Lua
     local climb = CLIMB
     if climb < 0 then climb = math.max(climb, -0.8 * (h - 1.5) - 0.6) end
     -- outer loop: the climb-rate error moves the pitch target around a trim that slowly learns the pitch
-    -- holding level flight at the current speed (8 degrees at lift-off, less when fast)
+    -- holding level flight at the current speed (takeoff trim, less when fast)
     local err = climb - vy
     local rolling = THROTTLE == 0 and h < 2.2
     local speed = math.sqrt(_VX(0)^2 + _VY(0)^2 + _VZ(0)^2)

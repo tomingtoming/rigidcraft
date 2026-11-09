@@ -830,3 +830,45 @@ the high-incidence aerodynamic force. The test covers the whole model, including
 the core plate. It does not determine lift at shallow incidence on a cruising
 plane. Reproduce with tools/orig-harness/wing-probe.py and a fresh private output
 directory. Raw observations: wing-air-spring-20261108 under the private runs.
+
+## 2026-11-09 — Airborne plate incidence, including 5° and 10°
+
+Two opposed flat jets apply 3,000 N vertically. The core faces the flow
+broadside; two attached Chip wings fold symmetrically with spring=1. Angles
+below are nominal wing incidence to vertical flow (0° edge-on, 90° broadside).
+Gravity is disabled after the first original frame. All nine models remained
+airborne with both wing parents attached throughout frames 30–240. The original
+begins pitching later in the run (about 17° by frame 240 in the 0° case).
+Compare the mean core-local upward velocity over frames 100–120 in both engines.
+
+| Wing incidence | B26 (m/s) | Previous (m/s) | Calibrated (m/s) |
+| ---: | ---: | ---: | ---: |
+| 0° | 20.902 | 13.693 | 20.668 |
+| 5° | 20.857 | 13.680 | 20.625 |
+| 10° | 20.642 | 13.621 | 20.427 |
+| 15° | 20.217 | 13.501 | 20.032 |
+| 30° | 17.937 | 12.767 | 17.884 |
+| 45° | 15.344 | 11.558 | 15.391 |
+| 60° | 13.415 | 9.926 | 13.477 |
+| 75° | 12.314 | 8.461 | 12.332 |
+| 90° | 11.959 | 7.906 | 11.952 |
+
+To estimate the wing-only change, subtract the 0° baseline: per-wing effective
+drag / speed² ≈ 1500 × (1/v² − 1/v0²), using the near-steady local speeds above.
+At 5° the original/previous/calibrated values are 0.0148/0.0150/0.0149;
+at 10° 0.0871/0.0842/0.0835; at 75° 6.46/12.95/6.35; at 90° 7.06/16.00/6.99
+N/(m/s)². Small residual acceleration, model tilt and joint deflection limit
+interpretation of this proxy. It measures resistance along the flow; lateral
+forces cancel in the symmetric model.
+
+Keep the existing 6.7 × sin(angle)^1.5 normal-force term. Change the
+coefficient on sin(angle)^8 from 9.3 to 0.3 so the broadside sum is 7. The
+former high-angle term came from a ground sled that stalled; this airborne
+measurement supersedes it for plate aerodynamics. A single 7 × sin(angle)^1.5
+term also fit the broadside endpoint but disturbed the established shallow-angle
+response and gave worse agreement at 15°–45° in this sweep.
+
+Reproduce with tools/orig-harness/wing-probe.py <new-private-dir> --incidence
+0 5 10 15 30 45 60 75 90. Paired traces and native reruns are under private
+runs/wing-incidence-20261109. This fixture does not identify pitching moments,
+lift in a banked turn, or interference between stacked wings.

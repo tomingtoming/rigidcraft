@@ -66,3 +66,32 @@ fn symmetric_jets_match_the_original_acceleration_and_speed_ceiling() {
   frames(&mut s,120);assert!((s.api("_VEL",&[0.0])-140.0).abs()<0.01);
  }
 }
+
+#[test]
+fn airborne_wing_drag_matches_the_b26_incidence_sweep() {
+    // Same 3,000 N vertical thrust at each angle. The core always faces the
+    // flow broadside, so the 0° row measures the baseline with edge-on wings.
+    let mut edge_on = 0.0;
+    for (incidence, original) in [(0, 20.902), (5, 20.857), (15, 20.217), (45, 15.344), (90, 11.959)] {
+        let fold = 90 - incidence;
+        let source = format!("Val {{ FOLD(default={fold},min=-90,max=90) }} Key {{}}
+            Body {{ Core(){{ N:Jet(power=9000){{}} S:Jet(power=9000){{}}
+            W:Chip(angle=FOLD,spring=1,damper=0.5){{}} E:Chip(angle=FOLD,spring=1,damper=0.5){{}} }} }}");
+        let mut sim = Simulation::load(&source, PhysicsOptions { no_course: true, ..Default::default() }).unwrap();
+        sim.step();
+        sim.state_mut().world.regulations.insert("G".into(), 0.0);
+        let mut total = 0.0;
+        for frame in 2..=120 {
+            sim.step();
+            if frame >= 100 {
+                total += sim.api("_VY", &[0.0]);
+            }
+        }
+        let mean = total / 21.0;
+        assert!((mean - original).abs() < 0.3, "{incidence} degrees: {mean}, expected {original}");
+        if incidence == 0 { edge_on = mean; }
+        if incidence == 5 {
+            assert!(((edge_on - mean) - 0.045).abs() < 0.025, "shallow angle increment");
+        }
+    }
+}

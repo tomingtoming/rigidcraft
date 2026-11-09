@@ -2459,3 +2459,18 @@ from transparent to a value below 0x1000 now restores opacity on both face and
 outline. The browser probe exercises fully transparent, partial and opaque in
 sequence. The colour/edit/share and stock plane flight probes and 217 unit tests
 pass.
+
+## 2026-11-09 — Calibrate wing drag in free air
+
+A nine-angle B26 comparison showed that the exposed core accounted for much
+of the speed error even with the wings edge-on. Subtracting the edge-on run
+separated the wing increment: shallow drag already agreed closely; at 75°
+the old model supplied twice the measured drag. Updating the steep-angle
+term brings all nine mean speeds within 0.24 m/s. The regression covers the
+5° increment as well as intermediate and broadside speeds.
+
+Retrospective: the stock trainer drifted over 40 m during the banked-flight
+test after the force change. Initial assist trim of 8.25° restored the existing
+takeoff, banking and landing checks. Measurement details are in measured.md.
+The browser core was built on Linux with Emscripten 6.0.13 after Windows
+Application Control blocked a native build dependency.

@@ -116,13 +116,14 @@ pub const AIR_DRAG: f64 = 0.7;
 /// isotropic drag per tile: N per (m/s)² per unit coefficient (a guess; 20 chips ≈ 1.8 kN at 30 m/s)
 pub const ISO_DRAG: f64 = 0.0; // 0 = off: it kept tonbo and the plane sample from taking off; kept as an experiment knob
 pub const LIFT_SLOPE: f64 = 3.8;
-/// plate normal force per chip = v² · (AERO_K·sin^AERO_P α + AERO_K2·sin^AERO_P2 α), α = angle to the airflow.
-/// Measured on the original with a jet-pushed rolling car (drag per chip / v²: 0.22 at 15°, 1.2 at 30°,
-/// 2.85 at 45°, ≈4 at 50°; at 60–90° the car stalls near 1–3 m/s). The second term is the steep rise
-/// toward broadside that the original's readme mentions.
+/// Airborne twin-jet measurements at 0–90° incidence (docs/measured.md).
+/// The leading normal force is proportional to speed² · sin(incidence)^1.5;
+/// its projection along the airflow supplies one additional sine factor.
 pub const AERO_K: f64 = 6.7;
 pub const AERO_P: f64 = 1.5;
-pub const AERO_K2: f64 = 9.3;
+// The shallow-angle term fits the rolling and airborne fixtures. Both terms
+// sum to the broadside coefficient of 7 measured in free flight.
+pub const AERO_K2: f64 = 0.3;
 pub const AERO_P2: f64 = 8.0;
 /// tyre friction coefficient (rapier combines with the ground's 1.0 by averaging)
 pub const WHEEL_FRICTION: f64 = 1.1; // measured against the dynamic (contact) load: the Basic layout drives S-first, so its powered axle leads and unloads to ~990 N under acceleration where it saturates at 1030 N; corpus bike unsaturated at power 5000
@@ -1139,10 +1140,6 @@ impl World {
                 // plate normal force (lift at angle of attack, broadside drag)
                 let vn = v.dot(normal);
                 let speed = v.length();
-                // measured 2026-10-28 on the original (ballasted sled, 2-chip plate, 3333 N): the plate's normal
-                // force grows like v²·sin^1.3(α) — ≈1.2 N/(m/s)² per chip at 30°, 3.9 at 60°, small at 15°, and
-                // flat plates feel nothing up to 40 m/s; a 3-plate sled lifts off at 40 m/s with 9° of pitch
-                // (AERO_MODEL 'pow', the default law; 'quad', 'newton', 'slope' and 'none' were probe knobs)
                 let sin_a = if speed > 1e-6 { vn.abs() / speed } else { 0.0 };
                 let mag = speed * speed * (AERO_K * sin_a.powf(AERO_P) + AERO_K2 * sin_a.powf(AERO_P2));
                 let f = -js_sign(vn) * drag * mag;
