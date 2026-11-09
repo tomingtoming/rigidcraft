@@ -2474,3 +2474,17 @@ test after the force change. Initial assist trim of 8.25° restored the existing
 takeoff, banking and landing checks. Measurement details are in measured.md.
 The browser core was built on Linux with Emscripten 6.0.13 after Windows
 Application Control blocked a native build dependency.
+
+## 2026-11-09 — Banked lift after the drag calibration
+
+Measured lateral and vertical lift on a free symmetric wing in seven conditions.
+Reversing bank reversed lateral lift, while the vertical component agreed
+between engines within 0.03 m/s² across the sweep. A stock trainer with a 30°
+bank command also produced similar average lateral acceleration at different
+flight speeds. No lift retuning was warranted by these observations.
+
+Retrospective: comparing at the same frame after a wind step initially
+suggested a roughly 9% discrepancy. The B26 model already had different
+downwind velocity. Matching the observed state first greatly reduced the
+difference. The cause of the wind-step transient remains open. Protocol,
+signed components and sustained-turn results are in measured.md.

@@ -872,3 +872,50 @@ Reproduce with tools/orig-harness/wing-probe.py <new-private-dir> --incidence
 0 5 10 15 30 45 60 75 90. Paired traces and native reruns are under private
 runs/wing-incidence-20261109. This fixture does not identify pitching moments,
 lift in a banked turn, or interference between stacked wings.
+
+## 2026-11-09 — Lift at bank entry and during the trainer turn
+
+Three coplanar plates (Core and one Chip on each side), free at 100 m, no
+gravity or jets. The B26 scenario rotates the model, then applies horizontal
+wind at frame 60. Compare the free response in air-relative coordinates.
+The original and native simulators have different velocities immediately
+after the wind step. Seed the native run once with B26's frame-64 quaternion
+and mass-centre velocity (central difference of frames 63 and 65). No further
+original states drive it. Ignore the wind-onset transient in the lift comparison.
+
+Compute acceleration and velocity from world-space mass-centre positions at
+30 Hz. For each centre frame 66–70, subtract wind from velocity and project
+acceleration onto the plane perpendicular to that relative velocity. Average
+these five samples. This gives lift per mass, with lateral and vertical axes
+expressed in the B26 world frame. Pitch and bank below are commands at release,
+not instantaneous incidence. All plates remained attached and clear of land.
+
+| Pitch / bank | Wind (m/s) | Mean airspeed, B26 / Snap (m/s) | Lateral lift/mass, B26 / Snap (m/s²) | Vertical lift/mass, B26 / Snap (m/s²) |
+| --- | ---: | --- | --- | --- |
+| 10° / 0° | 20 | 18.780 / 18.775 | 0 / 0 | 3.255 / 3.260 |
+| 10° / −30° | 20 | 18.780 / 18.775 | +1.631 / +1.631 | 2.815 / 2.825 |
+| 10° / +30° | 20 | 18.780 / 18.775 | −1.631 / −1.630 | 2.815 / 2.825 |
+| 0° / +30° | 20 | 18.958 / 18.958 | 0 / 0 | 0 / 0 |
+| 5° / +30° | 20 | 18.921 / 18.920 | −0.709 / −0.712 | 1.238 / 1.232 |
+| 15° / +30° | 20 | 18.642 / 18.633 | −2.573 / −2.566 | 4.466 / 4.446 |
+| 10° / +30° | 30 | 28.683 / 28.677 | −2.778 / −2.758 | 4.803 / 4.777 |
+
+Stock trainer cross-check: U=1, G/A on, power command ramp to 20,000; climb
+command 5 from frame 360, neutral climb and bank command 0° or 30° from
+frame 650. Pass the same scalar jet-power export to both engines. The trial
+with a product in the original Body definition stopped at a dialog and is
+excluded. Frames 650–900 include 8.33 s of turning, heights above 45 m,
+all parents intact. In the 30° run, final-three-second mean rolls were 29.94°
+and 30.01°. Mean speeds were 73.41 and 80.78 m/s. Ground-track heading changed
+−31.95° and −28.98°. Mean horizontal lateral acceleration was −4.948 and
+−4.919 m/s², computed from 5-frame displacement velocities and unwrapped
+per-frame heading increments. The 0° command gave −0.231 and −0.002 m/s².
+This trainer metric includes all forces; it is separate from isolated lift.
+
+Reproduce the wing trials with tools/orig-harness/bank-probe.py NEW_DIRECTORY
+and optional --pitch, --wind and --banks. For the trainer, flight-probe.py
+--bank 0 (or 30) --power 20000 --unbreakable 1 --out NEW_DIRECTORY then run
+the native flight binary on its plane.txt for 900 frames with U=1. Private
+evidence: runs/bank-p*-20261109 and runs/plane-turn-command-{0,30}-20261109.
+Lift agreed over the measured short free-response interval. The trainer retains
+a speed difference and small wings-level course drift in B26.

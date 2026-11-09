@@ -8,17 +8,26 @@ spec.loader.exec_module(water)
 p = argparse.ArgumentParser()
 p.add_argument('--power', type=int, choices=[10000,20000,40000,60000], required=True)
 p.add_argument('--mode', choices=['plane','thrust','fixed-plane'], default='plane')
+p.add_argument('--bank', type=float, help='plane: climb from frame 360, then command this bank from frame 650')
 p.add_argument('--angle', type=float, default=0)
 p.add_argument('--ballast', action='store_true')
 p.add_argument('--unbreakable', type=int, choices=[0,1], default=0)
 p.add_argument('--out', type=Path, required=True)
 a = p.parse_args()
+if a.bank is not None and (a.mode != 'plane' or not -45 <= a.bank <= 45):
+ p.error('--bank requires plane mode and -45..45 degrees')
 a.out.mkdir(exist_ok=True)
 if any(a.out.iterdir()): raise SystemExit('Output directory must be empty')
 source = (HERE.parents[1] / 'src/samples/plane.ts').read_text(encoding='utf-8').split(chr(96))[1]
 source = re.sub(r'//[^\n]*', '', source)
 source = re.sub(r'color=#[0-9a-fA-F]+', '', source)
 source = source.replace('  function OnFrame()', '  local flightTick = 0\n  function OnFrame()\n    flightTick = flightTick + 1\n    THROTTLE = math.min(' + str(a.power) + ', math.max(0, flightTick - 90) * 600)')
+if a.bank is not None:
+ # This scalar Val export ran in B26; use its exact bytes for native comparison.
+ source = source.replace('JET_SCALE(default=1, min=0, max=1, step=0)', 'ENGINE(default=0,min=0,max=60000,step=0)')
+ source = source.replace('THROTTLE*JET_SCALE', 'ENGINE')
+ source = re.sub(r'(?m)^(    )JET_SCALE = (.+)$', r'\1ENGINE = THROTTLE * (\2)', source)
+ source = source.replace('    local y = _Y(0)', f'    if flightTick>=360 and flightTick<650 then CLIMB=5 end\n    if flightTick>=650 then CLIMB=0 BANK={a.bank:g} end\n    local y = _Y(0)')
 if a.mode == 'fixed-plane':
  source = re.split(r'(?m)^Lua',source)[0] + 'Lua { local n=0 function OnFrame() n=n+1 THROTTLE=math.min(' + str(a.power) + ', math.max(0,n-90)*600) end }\n'
 if a.mode == 'thrust':
@@ -58,4 +67,4 @@ water.subprocess.run=run_land
 observations=a.out/'original'
 sys.argv=[sys.argv[0],'0','--frames','900','--model-file',str(model),'--out',str(observations)]
 water.main()
-(a.out/'case.json').write_text(json.dumps({'mode':a.mode,'angle':a.angle,'ballast':a.ballast,'power':a.power,'unbreakable':a.unbreakable,'frames':900,'air':0 if a.mode == 'thrust' else 1,'gravity':1 if a.mode == 'plane' else 0,'ramp_start':None if a.mode == 'thrust' else 90,'ramp_per_frame':None if a.mode == 'thrust' else 600,'exe_sha256':water.EXPECTED},indent=2))
+(a.out/'case.json').write_text(json.dumps({'mode':a.mode,'bank':a.bank,'angle':a.angle,'ballast':a.ballast,'power':a.power,'unbreakable':a.unbreakable,'frames':900,'air':0 if a.mode == 'thrust' else 1,'gravity':1 if a.mode == 'plane' else 0,'ramp_start':None if a.mode == 'thrust' else 90,'ramp_per_frame':None if a.mode == 'thrust' else 600,'exe_sha256':water.EXPECTED},indent=2))
