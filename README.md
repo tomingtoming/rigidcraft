@@ -1,4 +1,4 @@
-# SnapTiles
+# RigidCraft
 
 A browser sandbox for building vehicles out of square tiles and driving them
 with the keyboard or Lua. The simulation core (`core/`) is Rust: [Rapier](https://rapier.rs) (3D rigid bodies)
@@ -7,7 +7,7 @@ the page draws with [three.js](https://threejs.org).
 
 It reads the `.rc` model format and implements parts of the RigidChips script
 API, including `_KEY()`/`_X()`/`out()`. Supported models can be pasted in and
-played; compatibility is incomplete. SnapTiles is
+played; compatibility is incomplete. RigidCraft is
 a clean-room reimplementation: it was written from public documentation,
 wikis and black-box observations (see `docs/spec/` and `docs/measured.md`),
 without reading any RigidChips source code.
@@ -17,7 +17,11 @@ used as the reference for the physics constants recorded in `docs/measured.md`
 (measured by running it, not by reading it). No RigidChips files, community
 models or maps are included in this repository; bring your own `.rcd`.
 
-Live: https://snaptiles.toming.app (source: this repository, AGPL-3.0).
+Live: https://rigidcraft.toming.app (source: this repository, AGPL-3.0).
+
+Formerly named SnapTiles (renamed 2026-11-10, when the site moved from snaptiles.toming.app). The notes under
+`docs/` use the new name throughout, including entries written before that date, and so do the paths to the data
+folder kept outside this repository (`rigidcraft-models`, formerly `snaptiles-models`).
 
 ## Run
 
@@ -37,7 +41,7 @@ Files can also be dropped onto the editor.
   `0` and the view button, since browsers may keep F11/F12). A, the default, is the
   original's leash chase that follows the model's motion, not its heading; I/O zoom
   every view. Dragging, the wheel and pinching swing or lengthen view A's leash, a
-  SnapTiles extra; H uses the model's `_ZOOM` field of view. See `docs/measured.md`
+  RigidCraft extra; H uses the model's `_ZOOM` field of view. See `docs/measured.md`
   (camera).
 - **Keys**: the keycaps at the bottom are the model's keys and work by touch;
   W/A/S/D double as the arrows when the model does not bind key numbers 7/8/9/15 of
@@ -55,7 +59,7 @@ zero throttle and hold ↑: it flares by itself and brakes once down),
 hold; ↑↓←→ move, A/D turn), `tank` (A/D turret, Z fire), and `raft` (↑↓ forward/reverse, ←→ steer the twin jets). Choosing raft from the default course starts it on the water. The default course has a
 ramp, kerbs, a gate, a wall and crates to knock over.
 
-Choose **地形・お題** beside the samples for original SnapTiles terrain. Free drive
+Choose **地形・お題** beside the samples for original RigidCraft terrain. Free drive
 includes a kilometre-wide plateau with four peaks, a mountain pass and a six-hump washboard. Drive north across all six humps to measure the peak absolute vertical speed of the Core. The crest heights list follows your path from the first hump to the sixth. Select **比較基準にする** to keep it and the entry speed visible while tuning the model in this tab. The humps rise from 12 cm on
 the left to 55 cm on the right. The brake track pairs a low-grip blue lane with
 ordinary pavement. Brake at the white line to compare stopping distances. Timed courses include a drive over the pass,
@@ -213,7 +217,7 @@ and the comparison tools against the original under `tools/orig-harness/`.
 
 ## Privacy
 
-The live site (snaptiles.toming.app only) loads Cloudflare Web Analytics to count visits: no cookies, no personal
+The live site (rigidcraft.toming.app only) loads Cloudflare Web Analytics to count visits: no cookies, no personal
 data. Nothing collects models, runs or challenge results; personal bests stay in the browser's local storage, and
 share and record links carry their data in the URL fragment, which the beacon does not send (its payload's
 `location` is the page URL without `#…`; checked 2026-11-04).

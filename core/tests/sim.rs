@@ -2,12 +2,12 @@
 //! plane-controls (with the landing), measured-api, editor-script's Lua error lines, the scripted parts of physics
 //! and calibration (`_RX/_RY/_RZ`), and the prototype's checks (Lua budget, file lines, 5.0 spellings, keys reaching
 //! the script, `out` formatting). Samples are read from `src/samples/*.ts` (their template literal).
-use snaptiles_core::model::{assemble, Vec3};
-use snaptiles_core::physics::math::{from_vector, to_vector};
-use snaptiles_core::rc::parse_rc;
-use snaptiles_core::scripting::{LuaEngine, RcScript, ScriptHost};
-use snaptiles_core::sim::SimState;
-use snaptiles_core::{PhysicsOptions, Simulation};
+use rigidcraft_core::model::{assemble, Vec3};
+use rigidcraft_core::physics::math::{from_vector, to_vector};
+use rigidcraft_core::rc::parse_rc;
+use rigidcraft_core::scripting::{LuaEngine, RcScript, ScriptHost};
+use rigidcraft_core::sim::SimState;
+use rigidcraft_core::{PhysicsOptions, Simulation};
 use std::collections::HashMap;
 use std::f64::consts::PI;
 

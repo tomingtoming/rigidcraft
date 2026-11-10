@@ -7,7 +7,7 @@ set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 RC=$HOME/rc/RC15B26
 RES=$RC/Resources
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs
 HARNESS=${HARNESS:-/mnt/c/Users/toming/AppData/Local/Temp/harness_System.rcs}
 M=$HOME/rc/models
 mkdir -p "$OUT" "$M"

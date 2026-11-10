@@ -5,7 +5,7 @@ set -u
 SECS=${1:-12}; shift || true
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32
 export WINEDEBUG=-all,+err
-OUT=/mnt/d/snaptiles-models/quarantine/shots
+OUT=/mnt/d/rigidcraft-models/quarantine/shots
 mkdir -p "$OUT" ~/rc/log
 export DISPLAY=:99
 Xvfb :99 -screen 0 1280x800x24 >/dev/null 2>&1 &

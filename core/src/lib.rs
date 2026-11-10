@@ -1,4 +1,4 @@
-//! SnapTiles simulation core: the model's parser and assembler, Rapier physics, Val/Key handling and the model's
+//! RigidCraft simulation core: the model's parser and assembler, Rapier physics, Val/Key handling and the model's
 //! scripts (Lua 5.4 through mlua, and the legacy `Script`) in one Rust crate, built natively for fast headless runs
 //! and with Emscripten into one WebAssembly module for the browser. See core/PORT.md for the layout and the stages.
 

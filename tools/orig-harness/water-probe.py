@@ -115,7 +115,7 @@ def main():
         opts.out.mkdir(exist_ok=True)
         if any(opts.out.iterdir()):
             raise SystemExit("Output directory must be empty")
-    with tempfile.TemporaryDirectory(prefix="snaptiles-water-", dir="/tmp") as scratch:
+    with tempfile.TemporaryDirectory(prefix="rigidcraft-water-", dir="/tmp") as scratch:
         work = Path(scratch)
         shutil.copytree(original, work / "game", symlinks=True)
         shutil.copytree(Path.home() / ".wine-rc", work / "prefix", symlinks=True)

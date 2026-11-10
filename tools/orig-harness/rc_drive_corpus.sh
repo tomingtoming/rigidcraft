@@ -5,8 +5,8 @@
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 D=$(cd "$(dirname "$0")" && pwd); RC=$HOME/rc/RC15B26; RES=$RC/Resources
-RAW=/mnt/d/snaptiles-models/raw; G=/mnt/d/snaptiles-models/quarantine/original/runs/geom
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs/drive
+RAW=/mnt/d/rigidcraft-models/raw; G=/mnt/d/rigidcraft-models/quarantine/original/runs/geom
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs/drive
 mkdir -p "$OUT"
 for f in Land.x Basic.txt System.rcs; do [ -f "$RES/$f.orig" ] || cp "$RES/$f" "$RES/$f.orig"; done
 LAND_BASE=150 LAND_CELL=50 python3 "$D/make_land.py" "$D/terrains.json" wide /tmp/land_wide.body >/dev/null

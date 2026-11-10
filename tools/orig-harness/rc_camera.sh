@@ -7,7 +7,7 @@ set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 RC=$HOME/rc/RC15B26
 RES=$RC/Resources
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs/camera
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs/camera
 H=$(dirname "$0")/harness_camera.rcs
 mkdir -p "$OUT"
 name=$1 model=$2 secs=$3; shift 3

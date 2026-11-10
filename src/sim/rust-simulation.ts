@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { assemble, type Assembly, type TileInstance } from '../model/assemble';
 import { parseRc, type RcModel } from '../rc/parser';
 import type { KeyState } from '../input/keys';
-import type { SnapTilesCoreModule } from '../../core/pkg/snaptiles_core.js';
+import type { RigidCraftCoreModule } from '../../core/pkg/rigidcraft_core.js';
 import { FRAME_RATE, type BodyView, type PhysicsView, type Pose, type SimView, type TileBodyView, type ValState } from './sim-view';
 
 // the state buffer layout, separator, key count and API names are generated from the core (core/tests/bindings.rs)
@@ -19,10 +19,10 @@ import { Recording, type Command, type FrameInput } from './replay';
 import { advanceRings } from '../challenge/rings';
 import { box, chartHeight, crossesBrakingGate, inBox, MissionProgress, type Scenario, type Solid } from '../challenge/scenarios';
 
-let corePromise: Promise<SnapTilesCoreModule> | null = null;
+let corePromise: Promise<RigidCraftCoreModule> | null = null;
 /** load (once) and instantiate the Emscripten module */
-export function loadRustCore(): Promise<SnapTilesCoreModule> {
-  corePromise ??= import('../../core/pkg/snaptiles_core.js').then((m) => m.default());
+export function loadRustCore(): Promise<RigidCraftCoreModule> {
+  corePromise ??= import('../../core/pkg/rigidcraft_core.js').then((m) => m.default());
   corePromise.catch(() => { corePromise = null; });
   return corePromise;
 }
@@ -145,7 +145,7 @@ export class RustSimulation implements SimView {
   lines2d: number[] = [];
   zoomFov = 17.19;
   private chipNames = new Map<string, number>();
-  private m: SnapTilesCoreModule | null = null;
+  private m: RigidCraftCoreModule | null = null;
   private id = -1;
   private valOrder: (ValState | undefined)[] = [];
   private outGen = 0;

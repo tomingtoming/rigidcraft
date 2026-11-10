@@ -1,8 +1,8 @@
 [package]
-name = "snaptiles-core"
+name = "rigidcraft-core"
 version = "0.1.0"
 edition = "2021"
-description = "SnapTiles simulation core: Rapier physics and the model's Lua, native and WebAssembly (Emscripten)"
+description = "RigidCraft simulation core: Rapier physics and the model's Lua, native and WebAssembly (Emscripten)"
 license = "AGPL-3.0-or-later"
 publish = false
 
@@ -10,7 +10,7 @@ publish = false
 path = "src/lib.rs"
 
 [[bin]]
-name = "snaptiles_core"
+name = "rigidcraft_core"
 path = "src/main.rs"
 
 # terrain and step probes against the original (reads tools/orig-harness/terrains.json):

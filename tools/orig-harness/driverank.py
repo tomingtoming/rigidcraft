@@ -1,5 +1,5 @@
 """Rank corpus driving divergences (tier 3): original runs/drive/<n>.<mode>.csv (land at 150 m) against
-SnapTiles runs/drive/snap/<n>.<mode>.csv. Trajectories are taken relative to the start position and compared
+RigidCraft runs/drive/snap/<n>.<mode>.csv. Trajectories are taken relative to the start position and compared
 frame by frame until either leaves the 400 m probe land. usage: driverank.py <runs/drive> <runs/geom> [top]"""
 import csv, math, os, sys
 d, g = sys.argv[1], sys.argv[2]; top = int(sys.argv[3]) if len(sys.argv) > 3 else 40

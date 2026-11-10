@@ -20,7 +20,7 @@ for n, path in idx.items():
         missing.append((n, path, open(err).read()[:80] if os.path.exists(err) else 'no snap output')); continue
     res = []
     for op, sp in ((o1, s1), (o30, s30)):
-        o, s = load(op, False), load(sp, False)  # SnapTiles' _X already reports the original's left-handed x
+        o, s = load(op, False), load(sp, False)  # RigidCraft' _X already reports the original's left-handed x
         if not o or not s or 0 not in o or 0 not in s: res.append((None,) * 4); continue
         oc, sc = o[0][1:], s[0][1:]
         common = [c for c in o if c in s]
@@ -32,5 +32,5 @@ for n, path in idx.items():
 print(f"{'n':>3} {'g1 err':>7} {'g30 err':>7} chips o/s worst | model")
 for e, n, path, e1, e30, no, ns, w in sorted(out, key=lambda r: -r[0])[:top]:
     print(f"{n:>3} {e1 if e1 is not None else -1:7.3f} {e30 if e30 is not None else -1:7.3f} {no:>4}/{ns:<4} {w:>4} | {path}")
-print(f"compared {len(out)}, without SnapTiles output {len(missing)}")
+print(f"compared {len(out)}, without RigidCraft output {len(missing)}")
 for m in missing: print('  missing', *m)

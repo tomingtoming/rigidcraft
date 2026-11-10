@@ -17,7 +17,7 @@ export class Sfx {
   private armed = false;
   muted = false;
   constructor() {
-    try { this.muted = localStorage.getItem('snaptiles.muted') === '1'; } catch { /* optional preference storage */ }
+    try { this.muted = localStorage.getItem('rigidcraft.muted') === '1'; } catch { /* optional preference storage */ }
   }
 
   /** call from a pointerdown / keydown handler */
@@ -74,7 +74,7 @@ export class Sfx {
 
   setMuted(m: boolean): void {
     this.muted = m;
-    try { localStorage.setItem('snaptiles.muted', m ? '1' : '0'); } catch { /* keep this session's setting */ }
+    try { localStorage.setItem('rigidcraft.muted', m ? '1' : '0'); } catch { /* keep this session's setting */ }
     if (this.ctx) this.master.gain.setTargetAtTime(m ? 0 : 0.5, this.ctx.currentTime, 0.05);
   }
 

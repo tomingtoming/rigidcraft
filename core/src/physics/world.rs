@@ -67,7 +67,7 @@ pub const WHEEL_INERTIA_SCALE: f64 = 0.5;
 /// the motor torque reacts on the chassis (Wheel); RLW is the reactionless one
 pub const WHEEL_REACTION: bool = true;
 /// the reaction while the tyre touches the ground, as a fraction of the motor torque. In the original a car
-/// flooring it barely pitches (corpus car2: 0.01 rad); at full strength SnapTiles' car2 reared up and flipped,
+/// flooring it barely pitches (corpus car2: 0.01 rad); at full strength RigidCraft' car2 reared up and flipped,
 /// segway ran away and the Basic car wheelied over ramp crests. Turning it off fixes those but costs the
 /// steady-turn references (they lean on its rear load transfer: speed error 10.7 → 14.5%); a quarter keeps
 /// the fixes at 12.4% (2026-10-31, docs/measured.md tier 3). The airborne reaction (spawn-drop pitch) is full.

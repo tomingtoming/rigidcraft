@@ -1,8 +1,8 @@
 //! Black-box B26 collision outcomes recorded in docs/measured.md.
-use snaptiles_core::model::{assemble, refresh_joint_frames, Quat, Vec3};
-use snaptiles_core::physics::{BuildOptions, World};
-use snaptiles_core::rc::parse_rc;
-use snaptiles_core::{PhysicsOptions, Simulation};
+use rigidcraft_core::model::{assemble, refresh_joint_frames, Quat, Vec3};
+use rigidcraft_core::physics::{BuildOptions, World};
+use rigidcraft_core::rc::parse_rc;
+use rigidcraft_core::{PhysicsOptions, Simulation};
 
 fn drop_model(part: &str, height: f64, pitch: f64, roll: f64, unbreakable: bool) -> World {
     let source = "Val {}\nKey {}\nBody { Core(){ N:PART(){ N:PART(){} } S:PART(){} W:PART(){} E:PART(){} } }".replace("PART", part);
@@ -93,7 +93,7 @@ fn stock_plane_matches_original_controlled_crashes() {
 
 #[test]
 fn splitting_a_spinning_body_preserves_velocity_at_every_chip() {
-    use snaptiles_core::physics::math::{from_vector, to_vector, V3};
+    use rigidcraft_core::physics::math::{from_vector, to_vector, V3};
     let model = parse_rc("Val {}\nKey {}\nBody { Core(){ N:Chip(){ N:Weight(){} } S:Chip(){} } }").unwrap();
     let env = |_: &str| None;
     let a = assemble(&model, &env).unwrap().unwrap();

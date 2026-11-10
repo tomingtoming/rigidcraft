@@ -1,4 +1,4 @@
--- SnapTiles measurement harness v3: every Wheel/RLW gets POWER +-2500 (by side) during frames 31..150,
+-- RigidCraft measurement harness v3: every Wheel/RLW gets POWER +-2500 (by side) during frames 31..150,
 -- rest geometry of all chips at frame 30 -> geom.txt, per-frame core state -> log.txt (written once at frame 330)
 n=0
 buf=""

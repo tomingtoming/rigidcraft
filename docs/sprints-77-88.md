@@ -12,12 +12,12 @@ bit-identical original physics or support for every model.
 
 ## S77–78: compare the commands before tuning physics
 
-Instrumented original 2walk and SnapTiles with the same scripted FB ramp. Scenario
-logging is one model frame earlier than the after-step SnapTiles logger. With that
+Instrumented original 2walk and RigidCraft with the same scripted FB ramp. Scenario
+logging is one model frame earlier than the after-step RigidCraft logger. With that
 offset, commands differ by at most 1 degree during the ramp; rigid-invariant
 pairwise distances are within a few centimetres for early gait frames. Original
 core remains almost level before landing; sequential reaction rotations pitch
-SnapTiles before contact. Per-tile inertia alone did not fix the landing failure.
+RigidCraft before contact. Per-tile inertia alone did not fix the landing failure.
 
 **Retro:** input, shape and global pose require separate measurements. World Y
 has a terrain-origin offset in the original; compare height or relative distances.
@@ -121,7 +121,7 @@ unproven; the earlier blanket “no momentum” interpretation is superseded.
 
 ### Production verification
 
-Deployed 2026-10-29 to the existing snaptiles Worker/custom domain.
+Deployed 2026-10-29 to the existing rigidcraft Worker/custom domain.
 Version: `56bfc376-5e9a-4341-bfa0-a80e45ccf9e0`.
 Bundle: `/assets/index-DtXWpyea.js` (5,066,795 bytes).
 SHA-256: `292a55f92355115f99b7d5cfff77f0a51546f8d2c136ffa94c83b423fa328785`.

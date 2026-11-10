@@ -1,5 +1,5 @@
 import csv, sys
-# compare core-relative chip positions: original (W=+x) vs SnapTiles (W=-x, so x is negated)
+# compare core-relative chip positions: original (W=+x) vs RigidCraft (W=-x, so x is negated)
 orig, mine = sys.argv[1], sys.argv[2]
 def load(f):
     d = {}

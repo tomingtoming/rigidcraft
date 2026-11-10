@@ -1,6 +1,6 @@
 export interface Draft { version: 1; text: string; filename?: string; savedAt: number }
 export class DraftStore {
-  constructor(private storage: Pick<Storage, 'getItem' | 'setItem'>, private key = 'snaptiles.editor.draft.v1') {}
+  constructor(private storage: Pick<Storage, 'getItem' | 'setItem'>, private key = 'rigidcraft.editor.draft.v1') {}
   read(): Draft | null {
     try {
       const value = JSON.parse(this.storage.getItem(this.key) ?? 'null');

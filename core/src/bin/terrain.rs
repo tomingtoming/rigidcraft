@@ -10,8 +10,8 @@
 //! pose, velocity, Euler, then y, z and `_WY` of the first four Wheel/RLW chips. Paths are relative to the repository.
 use rapier3d::geometry::ColliderBuilder;
 use rapier3d::math::Vector;
-use snaptiles_core::js::number_to_string as js;
-use snaptiles_core::{PhysicsOptions, Simulation};
+use rigidcraft_core::js::number_to_string as js;
+use rigidcraft_core::{PhysicsOptions, Simulation};
 use std::fs;
 use std::path::PathBuf;
 

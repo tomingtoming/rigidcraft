@@ -1,6 +1,6 @@
-use snaptiles_core::{Simulation, PhysicsOptions};
-use snaptiles_core::physics::math::to_vector;
-use snaptiles_core::model::Vec3;
+use rigidcraft_core::{Simulation, PhysicsOptions};
+use rigidcraft_core::physics::math::to_vector;
+use rigidcraft_core::model::Vec3;
 const CORE: &str = "Val {} Key {} Body { Core(){} } Lua { function OnFrame() end }";
 fn make(gravity: f64) -> Simulation {
  Simulation::load(CORE, PhysicsOptions { gravity, no_course:true, no_ground:true }).unwrap()

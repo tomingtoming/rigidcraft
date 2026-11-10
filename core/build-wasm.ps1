@@ -1,4 +1,4 @@
-# Build the core for the browser: one ES module (snaptiles_core.js + snaptiles_core.wasm) in core/pkg.
+# Build the core for the browser: one ES module (rigidcraft_core.js + rigidcraft_core.wasm) in core/pkg.
 # Needs emsdk (EMSDK, default C:\Users\<you>\emsdk, `emsdk install latest` + `activate latest`) and the Rust target
 # wasm32-unknown-emscripten. Only this process's environment is changed.
 $ErrorActionPreference = 'Continue' # cargo reports progress on stderr; failures are judged by exit codes
@@ -14,10 +14,10 @@ $env:AR_wasm32_unknown_emscripten = "$em\emar.exe"
 $env:CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_LINKER = "$em\emcc.exe"
 Push-Location $PSScriptRoot
 try {
-  cargo build --release --target wasm32-unknown-emscripten --bin snaptiles_core 2>&1 | ForEach-Object { "$_" }
+  cargo build --release --target wasm32-unknown-emscripten --bin rigidcraft_core 2>&1 | ForEach-Object { "$_" }
   if ($LASTEXITCODE -ne 0) { throw "cargo build failed ($LASTEXITCODE)" }
   $out = 'target\wasm32-unknown-emscripten\release'
   New-Item -ItemType Directory -Force pkg | Out-Null
-  Copy-Item "$out\snaptiles_core.js", "$out\snaptiles_core.wasm" pkg -Force
+  Copy-Item "$out\rigidcraft_core.js", "$out\rigidcraft_core.wasm" pkg -Force
   Get-ChildItem pkg | Select-Object Name, Length
 } finally { Pop-Location }

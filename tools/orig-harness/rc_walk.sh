@@ -2,7 +2,7 @@
 # corpus walkers on the original: hold Up (key 0) from 4 s to 18 s, log the core (harness_turn3, frame 600), screenshot
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
-RC=$HOME/rc/RC15B26; RES=$RC/Resources; OUT=/mnt/d/snaptiles-models/quarantine/original/runs; M=$HOME/rc/models
+RC=$HOME/rc/RC15B26; RES=$RC/Resources; OUT=/mnt/d/rigidcraft-models/quarantine/original/runs; M=$HOME/rc/models
 sed "s/\r//" /mnt/c/Users/toming/AppData/Local/Temp/harness_turn3.rcs > "$RES/System.rcs"
 for spec in "$@"; do
   IFS=: read -r name model <<< "$spec"

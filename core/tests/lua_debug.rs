@@ -1,7 +1,7 @@
 //! Replays and the page's Lua tools: a run repeats exactly from the same inputs, the watch list shows the model's own
 //! globals, and a breakpoint records the locals at its line.
-use snaptiles_core::scripting::lua::{check_syntax, Breakpoint};
-use snaptiles_core::{PhysicsOptions, Simulation};
+use rigidcraft_core::scripting::lua::{check_syntax, Breakpoint};
+use rigidcraft_core::{PhysicsOptions, Simulation};
 
 const BODY: &str = "Val { ENGINE(default=0,min=-2000,max=2000,step=200) }
 Key { 0:ENGINE(step=200) }

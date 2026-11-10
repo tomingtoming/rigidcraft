@@ -19,7 +19,7 @@ import { SAMPLES } from './samples';
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const canvas = $<HTMLCanvasElement>('view');
 // Cloudflare Web Analytics (no cookies, no personal data), on the production host only: local runs and tests stay out
-if (location.hostname === 'snaptiles.toming.app') {
+if (location.hostname === 'rigidcraft.toming.app') {
   const beacon = document.createElement('script');
   beacon.defer = true;
   beacon.src = 'https://static.cloudflareinsights.com/beacon.min.js';

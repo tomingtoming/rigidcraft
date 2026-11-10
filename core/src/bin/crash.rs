@@ -1,11 +1,11 @@
 //! Controlled drop counterpart of tools/orig-harness/crash-probe.py.
 //! cargo run --release --bin crash -- Weight 200 90
 //! Emits per-substep poses, velocities, ground impulses and detached state.
-use snaptiles_core::model::{assemble, refresh_joint_frames, Quat, Vec3};
-use snaptiles_core::physics::{BuildOptions, World};
-use snaptiles_core::physics::math::{from_vector, V3};
-use snaptiles_core::rc::parse_rc;
-use snaptiles_core::PhysicsOptions;
+use rigidcraft_core::model::{assemble, refresh_joint_frames, Quat, Vec3};
+use rigidcraft_core::physics::{BuildOptions, World};
+use rigidcraft_core::physics::math::{from_vector, V3};
+use rigidcraft_core::rc::parse_rc;
+use rigidcraft_core::PhysicsOptions;
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();

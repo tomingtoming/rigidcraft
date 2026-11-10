@@ -1,5 +1,5 @@
 //! Read a self-authored flight-probe model and log the same physical quantities as B26.
-use snaptiles_core::{Simulation, PhysicsOptions};
+use rigidcraft_core::{Simulation, PhysicsOptions};
 fn main() {
     let args: Vec<_> = std::env::args().collect();
     let source = std::fs::read_to_string(&args[1]).unwrap();

@@ -1,5 +1,5 @@
 """Rank terrain-probe divergences: original logs (runs/terrain/<scene>_p2500.csv, land lifted by 50 m) against
-SnapTiles replays (runs/terrain/snap/...). usage: terraindiff.py <runs/terrain dir>"""
+RigidCraft replays (runs/terrain/snap/...). usage: terraindiff.py <runs/terrain dir>"""
 import csv, math, os, sys
 d = sys.argv[1]
 def load(p, base):

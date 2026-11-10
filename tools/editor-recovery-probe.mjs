@@ -10,7 +10,7 @@ try {
  const original=await page.inputValue('#source');
  const a={version:1,text:'Body { Core(){N:Chip()} }',filename:'試作車 A.rcd',savedAt:Date.UTC(2026,9,30,0,30)};
  const b={...a,text:'Body { Core(){S:Frame()} }',filename:'別の試作 B.rcd'};
- const put=async(p,d)=>p.evaluate(d=>localStorage.setItem('snaptiles.editor.draft.v1',JSON.stringify(d)),d);
+ const put=async(p,d)=>p.evaluate(d=>localStorage.setItem('rigidcraft.editor.draft.v1',JSON.stringify(d)),d);
  await put(page,a);await page.click('#build');
  assert.equal(await page.locator('#draft-filename').textContent(),a.filename);
  assert.equal(await page.locator('#draft-saved').textContent(),'保存: 2026/10/30 09:30');
@@ -57,10 +57,10 @@ try {
  await page.keyboard.press('Control+z');assert.equal(await page.inputValue('#source'),a.text);
  // A cross-tab removal hides the card, moving focus only if that card owned it.
  await put(other,b);await page.waitForFunction(()=>!document.querySelector('#draft-recovery').hidden);
- await page.focus('#restore-draft');await other.evaluate(()=>localStorage.removeItem('snaptiles.editor.draft.v1'));
+ await page.focus('#restore-draft');await other.evaluate(()=>localStorage.removeItem('rigidcraft.editor.draft.v1'));
  await page.waitForFunction(()=>document.querySelector('#draft-recovery').hidden);assert.equal(await active(),'parts');
  await put(other,b);await page.waitForFunction(()=>!document.querySelector('#draft-recovery').hidden);
- await page.focus('#part-angle');await other.evaluate(()=>localStorage.removeItem('snaptiles.editor.draft.v1'));
+ await page.focus('#part-angle');await other.evaluate(()=>localStorage.removeItem('rigidcraft.editor.draft.v1'));
  await page.waitForFunction(()=>document.querySelector('#draft-recovery').hidden);assert.equal(await active(),'part-angle');
  await other.close();console.log('Recovery: named timestamp, visible snapshot identity, Undo, cross-tab refresh, unnamed/invalid-date/incomplete-source recovery, keyboard edit/save and conditional focus recovery pass');
 }finally{await browser.close();}

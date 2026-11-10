@@ -319,7 +319,7 @@ export class ChallengeUI {
   }
 
   private best(s: Scenario): Best | null {
-    try { return JSON.parse(localStorage.getItem(`snaptiles.challenge.${s.id}`) ?? 'null') as Best | null; } catch { return null; }
+    try { return JSON.parse(localStorage.getItem(`rigidcraft.challenge.${s.id}`) ?? 'null') as Best | null; } catch { return null; }
   }
 
   private showResult(sim: RustSimulation, cleared: boolean): void {
@@ -345,7 +345,7 @@ export class ChallengeUI {
           ...best, time: Math.min(time, best?.time ?? Infinity), cost: Math.min(cost, best?.cost ?? Infinity),
           ...(saveSectors ? { sectorDurations } : {}),
         };
-        try { localStorage.setItem(`snaptiles.challenge.${s.id}`, JSON.stringify(best)); } catch { /* private mode */ }
+        try { localStorage.setItem(`rigidcraft.challenge.${s.id}`, JSON.stringify(best)); } catch { /* private mode */ }
       }
     }
     $('challenge-result-title').textContent = cleared ? (within ? `クリア！ ${s.title}` : `ゴール（予算オーバー）${s.title}`) : `時間切れ ${s.title}`;

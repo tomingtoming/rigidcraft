@@ -10,9 +10,9 @@
 //! wheelpow,wheelwy,wheely, plus `<out>.geom.csv` at frame geomAt; `--chips6` harness_servo.rcs, `--chips10`
 //! harness_servo2.rcs, `--turn` harness_turn2.rcs, `--wheels` harness_wheels.rcs, `--arm` harness_arm.rcs, `--fuel`
 //! harness_fuel.rcs). The default course is in place unless `--nocourse` (the TypeScript tool's `--tune={"noCourse":true}`). Model files that are not UTF-8 are read lossily (names and comments).
-use snaptiles_core::js::to_fixed;
-use snaptiles_core::sim::api::{Arg, Ret};
-use snaptiles_core::{PhysicsOptions, Simulation};
+use rigidcraft_core::js::to_fixed;
+use rigidcraft_core::sim::api::{Arg, Ret};
+use rigidcraft_core::{PhysicsOptions, Simulation};
 use std::fs;
 
 fn f4(x: f64) -> String {
@@ -87,9 +87,9 @@ fn main() {
         } else if fuel {
             let xs = ["_X", "_Y", "_Z", "_VX", "_VY", "_VZ"].map(|f| f4(a(&sim, f, 0.0))).join(",");
             let fv = [a(&sim, "_FUEL", 0.0), a(&sim, "_FUELMAX", 0.0), get(&sim, 0.0, "FUEL"), get(&sim, 0.0, "FUELMAX"), get(&sim, 1.0, "FUEL"), chips];
-            format!("{n},{xs},{}", fv.map(|x| snaptiles_core::js::number_to_string(x)).join(","))
+            format!("{n},{xs},{}", fv.map(|x| rigidcraft_core::js::number_to_string(x)).join(","))
         } else if arm {
-            let ts: Vec<String> = (0..20).map(|c| snaptiles_core::js::number_to_string(if (c as f64) < chips { a(&sim, "_T", c as f64) } else { -2.0 })).collect();
+            let ts: Vec<String> = (0..20).map(|c| rigidcraft_core::js::number_to_string(if (c as f64) < chips { a(&sim, "_T", c as f64) } else { -2.0 })).collect();
             format!("{n},{},{}", pose(&sim), ts.join(","))
         } else if wheels {
             let mut ws: Vec<f64> = wheel_chips.iter().take(6).map(|&c| a(&sim, "_WY", c as f64)).collect();
@@ -107,7 +107,7 @@ fn main() {
                 let mut g = vec!["chip,type,dir,parent,x,y,z,ex,ey,ez".to_string()];
                 for c in 0..chips as usize {
                     let c = c as f64;
-                    g.push(format!("{},{},,,{}", c, snaptiles_core::js::number_to_string(a(&sim, "_TYPE", c)), ["_X", "_Y", "_Z", "_EX", "_EY", "_EZ"].map(|f| f4(a(&sim, f, c))).join(",")));
+                    g.push(format!("{},{},,,{}", c, rigidcraft_core::js::number_to_string(a(&sim, "_TYPE", c)), ["_X", "_Y", "_Z", "_EX", "_EY", "_EZ"].map(|f| f4(a(&sim, f, c))).join(",")));
                 }
                 let g = g.join("\n") + "\n";
                 fs::write(out_file.trim_end_matches(".csv").to_string() + ".geom.csv", &g).expect("write geom");

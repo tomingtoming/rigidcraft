@@ -4,7 +4,7 @@
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 D=$(cd "$(dirname "$0")" && pwd); RC=$HOME/rc/RC15B26; RES=$RC/Resources
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs/ground
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs/ground
 mkdir -p "$OUT/models"
 mk() { printf 'Val { A(default=0) }\nKey { }\nBody { Core(){ %s } }\n' "$2" > "$OUT/models/$1.txt"; }
 mk g_core ''

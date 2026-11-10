@@ -81,9 +81,9 @@ Fixtures:
 |---|---:|---:|---:|
 | Original, variable | .999530 | approximately 1 | none |
 | Original, literal | .999530 | approximately 1 | none |
-| SnapTiles, variable, hold=0 | .113097 | .113112 | 62 |
-| SnapTiles, literal, hold=0 | .999934 | ~1 | none |
-| SnapTiles, variable, fixed-rest diagnostic | .990091 | .999998 | none |
+| RigidCraft, variable, hold=0 | .113097 | .113112 | 62 |
+| RigidCraft, literal, hold=0 | .999934 | ~1 | none |
+| RigidCraft, variable, fixed-rest diagnostic | .990091 | .999998 | none |
 
 Original variable/literal CSVs are **byte-identical** across all 240 frames, so
 one shared CSV is stored. Both were fresh executable runs; `run_probe.sh` checks
@@ -91,7 +91,7 @@ the output modification time against its per-run marker and restores Basic/Syste
 SHA-256 of each original CSV:
 `be570dcc43275cc4af3a0894694b499cfc8852844238e1b791c2aacd95afe881`.
 
-At the first appreciable tilt in the variable SnapTiles rig, a loaded knee has
+At the first appreciable tilt in the variable RigidCraft rig, a loaded knee has
 about **3.74°** holding error despite a zero-angle command. In zrobo, selectively
 fixing just hips, knees or ankles moves the error to another member of the chain
 and does not prevent falling. Fixing the **six leg fold joints** (15,16,17 and
@@ -131,9 +131,9 @@ launch walkers. Static success here is a necessary control, not dynamic acceptan
 From the repository, use absolute output paths in an existing ignored directory:
 
 ```powershell
-bun tools/servo-cause-probe.ts tools/orig-harness/standing-angle-variable.rcd '{"servoHold":0}' D:/snaptiles/.shots/cause-variable.jsonl
-bun tools/servo-cause-probe.ts tools/orig-harness/standing-angle-literal.rcd '{"servoHold":0}' D:/snaptiles/.shots/cause-literal.jsonl
-bun tools/servo-cause-probe.ts tools/orig-harness/standing-angle-variable.rcd '{"servoHold":0}' D:/snaptiles/.shots/cause-fixed.jsonl '{"fixedRest":true}'
+bun tools/servo-cause-probe.ts tools/orig-harness/standing-angle-variable.rcd '{"servoHold":0}' D:/rigidcraft/.shots/cause-variable.jsonl
+bun tools/servo-cause-probe.ts tools/orig-harness/standing-angle-literal.rcd '{"servoHold":0}' D:/rigidcraft/.shots/cause-literal.jsonl
+bun tools/servo-cause-probe.ts tools/orig-harness/standing-angle-variable.rcd '{"servoHold":0}' D:/rigidcraft/.shots/cause-fixed.jsonl '{"fixedRest":true}'
 ```
 
 For community-model diagnostics pass the external model path. Interventions are

@@ -156,7 +156,7 @@ export class SceneView {
   camPitch = 0.35;
   camDist = 12;
   private zoomLimit = 60;
-  /** wheel / pinch: the editor's orbit distance, or the leash length of views A and F (a SnapTiles extra) */
+  /** wheel / pinch: the editor's orbit distance, or the leash length of views A and F (a RigidCraft extra) */
   zoomBy(factor: number, editing = false): void {
     if (editing || this.viewMode === 'orbit') this.camDist = Math.max(editing ? 0.5 : 3, Math.min(this.zoomLimit, this.camDist * factor));
     else if (this.viewMode === 'A' || this.viewMode === 'F') this.leashDist = Math.max(2, Math.min(200, this.leashDist * factor));
@@ -187,7 +187,7 @@ export class SceneView {
     const fov = this.viewMode === 'orbit' ? this.baseFov : this.viewMode === 'H' ? this.onboardFov : this.viewFov;
     if (this.camera.fov !== fov) { this.camera.fov = fov; this.camera.updateProjectionMatrix(); }
   }
-  /** mouse drag: the editor orbit, or (SnapTiles extra) swing the leash of views A and F */
+  /** mouse drag: the editor orbit, or (RigidCraft extra) swing the leash of views A and F */
   orbitBy(dx: number, dy: number): void {
     if (this.viewMode === 'A' || this.viewMode === 'F') {
       this.leashEye.sub(this.camTarget).applyAxisAngle(UP_AXIS, -dx * 0.006).add(this.camTarget);

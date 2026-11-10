@@ -1,4 +1,4 @@
-# snaptiles-core
+# rigidcraft-core
 
 The simulation core in Rust: [Rapier](https://rapier.rs) (`rapier3d` 0.36) and the model's Lua (Lua 5.4 through
 [mlua](https://github.com/mlua-rs/mlua), vendored C sources) in one crate. It builds natively (headless runs, `cargo
@@ -20,8 +20,8 @@ Native tools against the original's logs: `src/bin/replay.rs` (corpus driving an
 
 ```
 cargo test --release                 # native
-cargo run --release --bin replay -- D:/snaptiles-models/quarantine/original/runs   # corpus replay → snap_rust
-bun run build:core                   # browser: core/pkg/snaptiles_core.{js,wasm} (core/build-wasm.ps1)
+cargo run --release --bin replay -- D:/rigidcraft-models/quarantine/original/runs   # corpus replay → snap_rust
+bun run build:core                   # browser: core/pkg/rigidcraft_core.{js,wasm} (core/build-wasm.ps1)
 ```
 
 The browser build needs [emsdk](https://emscripten.org/docs/getting_started/downloads.html) (`emsdk install latest`,
@@ -36,8 +36,8 @@ replays and rewind rely on it; `tests/debug.rs` checks it). lua-src does not tel
 changes: after changing it, `cargo clean -p mlua-sys --release` (and again with `--target wasm32-unknown-emscripten`).
 
 `core/pkg` is committed so `bun run build` works without emsdk: **rebuild it (`bun run build:core`) after changing
-`core/src`** and commit the new `snaptiles_core.{js,wasm}`. The page's view of the core is generated, not written by
-hand: `tests/bindings.rs` writes `pkg/snaptiles_core.d.ts` (one method per `extern "C" fn core_*` in `src/ffi.rs`) and
+`core/src`** and commit the new `rigidcraft_core.{js,wasm}`. The page's view of the core is generated, not written by
+hand: `tests/bindings.rs` writes `pkg/rigidcraft_core.d.ts` (one method per `extern "C" fn core_*` in `src/ffi.rs`) and
 `../src/sim/core-layout.ts` (the state buffer's slot indices and strides from the `layout!` lists in `src/state.rs`,
 the layout version, the text separator, the key count, and `ApiName` from the script API table), and checks that
 `.cargo/config.toml` exports exactly those functions. `cargo test` fails when they are stale;

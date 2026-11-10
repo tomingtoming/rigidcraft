@@ -10,8 +10,8 @@
 //! (chip,type,dir,parent,x,y,z,ex,ey,ez). Load failures go to `.err` files. SNAP_DIR defaults to `snap_rust`;
 //! existing outputs are overwritten. Runs are spread over the machine's cores (REPLAY_THREADS to override);
 //! REPLAY_JITTER nudges the initial velocities of the drive runs (see [`jitter`]).
-use snaptiles_core::js::{number_to_string as js, to_fixed};
-use snaptiles_core::{PhysicsOptions, Simulation};
+use rigidcraft_core::js::{number_to_string as js, to_fixed};
+use rigidcraft_core::{PhysicsOptions, Simulation};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -46,7 +46,7 @@ fn drive(runs: &Path, snap: &str, n: &str, mode: &str, log: &Path) {
             return;
         }
     };
-    snaptiles_core::sim::seed_random(1);
+    rigidcraft_core::sim::seed_random(1);
     let mut sim = match Simulation::load(&source, opts()) {
         Ok(s) => s,
         Err(e) => {
@@ -88,7 +88,7 @@ fn geom(runs: &Path, snap: &str, n: &str) {
             return;
         }
     };
-    snaptiles_core::sim::seed_random(1);
+    rigidcraft_core::sim::seed_random(1);
     let mut sim = match Simulation::load(&source, opts()) {
         Ok(s) => s,
         Err(e) => {

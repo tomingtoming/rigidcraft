@@ -1,6 +1,6 @@
 # Visual editor sprints
 
-Independent implementation from SnapTiles' format parser and public behavior;
+Independent implementation from RigidCraft' format parser and public behavior;
 no RCD/RCM implementation source or assets used.
 
 ## 2026-10-29 — Power and controls
@@ -771,7 +771,7 @@ Validation: 98 unit/integration tests and typecheck/build pass. Application code
 and built JS hash (index-BVfEZGL2.js) are unchanged from Sprint 31, whose 20 browser
 probes passed; this documentation/test-only sprint does not repeat that suite.
 Read-only GitHub check on 2026-10-30: PR 1 remains OPEN at 1f3f884f0f12a659e6c58d49da3a8b5166f034b3
-(https://github.com/tomingtoming/snaptiles/pull/1). Editor work through local
+(https://github.com/tomingtoming/rigidcraft/pull/1). Editor work through local
 02d92c4 is not that remote head. No push or deployment was performed.
 
 Retrospective: input plumbing and a changing control value are weaker evidence
@@ -1683,7 +1683,7 @@ restoration: cancellation itself had not occurred.
 A minimal native HTML page containing only a button, dialog and select reproduced
 8/12 failures when Escape followed opening immediately. Waiting two animation
 frames after opening yielded 0/12 failures on that same minimal page. Applying
-that pre-input wait to SnapTiles yielded 12/12 successful cancellation/focus
+that pre-input wait to RigidCraft yielded 12/12 successful cancellation/focus
 checks across fresh pages, half with event logging. This isolates a timing-sensitive
 native WebKit interaction in this environment; it does not prove a universal
 Safari defect or precise browser-internal cause.
@@ -2113,7 +2113,7 @@ Lua-free design and only checks takeoff.
 
 ## 2026-10-30 — The original's camera views A–J (Sprint 70)
 
-Goal: replace SnapTiles' own runtime camera (chase/orbit/top/onboard on 1–4) with the original's views,
+Goal: replace RigidCraft' own runtime camera (chase/orbit/top/onboard on 1–4) with the original's views,
 following the owner's choices: original keys plus digits, view A as the default, keep mouse/touch
 as an extra, implement every measured view. Measurements: docs/measured.md (camera).
 
@@ -2130,7 +2130,7 @@ lengthen view A's leash (the original's mouse moved nothing). The editor keeps i
 The size-fitted runtime framing (runtime-framing-probe) contradicted the original, which keeps 8 m
 for any model, and was replaced by runtime-camera-probe: A's distance/height/bearing, I/O floor,
 ceiling and sharing, key mapping, E height, J motion, H and B staying put, and the wheel. A
-side-by-side screenshot of the measurement car (original view A vs SnapTiles) shows the same side
+side-by-side screenshot of the measurement car (original view A vs RigidCraft) shows the same side
 and the same on-screen size.
 
 Approximations: F/G ignore detached chips; J's height swing (0.75 ± 2.45 m) is shaped from one
@@ -2143,7 +2143,7 @@ from the current camera instead of the original's CCD pose. Validation: build, 1
 
 Owner question: does the default car hitting a kerb lower than its tyre radius behave like the original?
 Measured it (docs/measured.md, kerb section): the original rolls up 0.10/0.20/0.25 m kerbs losing 17/60/79%
-of 6.9 m/s; SnapTiles threw the car into a near-vertical wheelie, stalled it, or bounced it back. Cause:
+of 6.9 m/s; RigidCraft threw the car into a near-vertical wheelie, stalled it, or bounced it back. Cause:
 the tyre is a rigid frictionless sphere, and rapier's predicted contact against the kerb edge kicked the
 car with more than twice the vertical speed an inelastic impact allows. Kerb edges (and kerbs the tyre
 has sunk into) are now a spring-damper along the edge normal; flat-ground behaviour is byte-identical.
@@ -2181,7 +2181,7 @@ Difference hunt group A (standing models toppling on landing). The cause was rap
 sixteen of them injected energy at impacts (a one-body coin spun up on a level landing; the wall rebound
 grew with the count). One substep with 16 internal PGS iterations keeps joint stiffness and the turn
 references, removes the wall rebound without the `WALL_NO_REBOUND` clamp (removed), and halves the corpus
-runs where SnapTiles falls while the original stands (25 → 11). 182 unit tests, all browser scenarios and
+runs where RigidCraft falls while the original stands (25 → 11). 182 unit tests, all browser scenarios and
 both plane probes pass. The flat-ground byte-identity of earlier sprints no longer holds (the solver
 changed); the turn references were re-compared with the original instead.
 
@@ -2209,7 +2209,7 @@ New unit test against the measured response; 186 unit tests, all browser scenari
 Measured the original's static sag of spring joints (animated and literal angles alike) and rebuilt joints with
 spring < 1 as revolute joints held by a force-based position motor of 3.7·10⁶·spring² N·m/rad. The internal PGS
 iterations go 16 → 48 so jointed axles hold on landing. Upright mismatches against the original 18 → 12, runs
-where only SnapTiles falls 10 → 5. New sag tests; 190 unit tests, all browser scenarios and both plane probes pass.
+where only RigidCraft falls 10 → 5. New sag tests; 190 unit tests, all browser scenarios and both plane probes pass.
 
 
 ## 2026-11-01 — Rotors (Sprint 78)
@@ -2383,7 +2383,7 @@ smoothness from a still screenshot or assuming the monitor refresh rate.
 
 ## 2026-11-06 — Compare plane speed before reducing its power
 
-The same 30-second scripted plane runs in B26 and SnapTiles exposed early tail
+The same 30-second scripted plane runs in B26 and RigidCraft exposed early tail
 failure in the original, even before meaningful speed. U=1 gave an intact
 20,000-power comparison (224 vs 595 km/h at 30 s), but the 60,000-power original
 still failed under extreme load. A simple no-air/no-gravity twin Jet then showed

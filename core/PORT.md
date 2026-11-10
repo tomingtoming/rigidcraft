@@ -30,13 +30,13 @@ preview and source patches; the runtime uses the Rust ones, and a cross-check ke
 ## Oracle and acceptance
 
 **Done (2026-11-02): the TypeScript core is removed** and this crate is the only simulation. The oracle JSON it
-wrote stays frozen under `D:/snaptiles-models/quarantine/oracle/` as a regression baseline: `tests/oracle.rs` still
+wrote stays frozen under `D:/rigidcraft-models/quarantine/oracle/` as a regression baseline: `tests/oracle.rs` still
 compares the TypeScript parser and assembler (kept for the editor) through `tools/export-oracle.ts`, and
 `tests/physics_oracle.rs` compares the physics against the last TypeScript output.
 
 The TypeScript implementation was the oracle. `tools/export-oracle.ts` writes, for every corpus model
-(`D:/snaptiles-models/quarantine/original/runs/geom/models/<n>.txt`, index in `index.tsv` there) and every sample in
-`src/samples`, JSON under `D:/snaptiles-models/quarantine/oracle/`:
+(`D:/rigidcraft-models/quarantine/original/runs/geom/models/<n>.txt`, index in `index.tsv` there) and every sample in
+`src/samples`, JSON under `D:/rigidcraft-models/quarantine/oracle/`:
 
 1. parse: Val declarations, Key bindings, node count, script language and `firstLine`, warnings, or the error;
 2. assemble: per tile type, dir, parent index, mass, position, quaternion (rest pose with the default Vals);

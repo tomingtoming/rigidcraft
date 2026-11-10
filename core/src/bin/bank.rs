@@ -1,9 +1,9 @@
 //! Initial lift in a bank. Match the measured B26 orientation at wind onset.
-use snaptiles_core::model::{assemble, refresh_joint_frames, Quat, Vec3};
-use snaptiles_core::physics::math::to_vector;
-use snaptiles_core::physics::{BuildOptions, World};
-use snaptiles_core::rc::parse_rc;
-use snaptiles_core::PhysicsOptions;
+use rigidcraft_core::model::{assemble, refresh_joint_frames, Quat, Vec3};
+use rigidcraft_core::physics::math::to_vector;
+use rigidcraft_core::physics::{BuildOptions, World};
+use rigidcraft_core::rc::parse_rc;
+use rigidcraft_core::PhysicsOptions;
 fn main() {
     let args: Vec<_> = std::env::args().skip(1).collect();
     assert_eq!(args.len(), 9, "model qx qy qz qw wind_z vx vy vz");

@@ -30,7 +30,7 @@ try {
  // B starts at the current camera and does not follow (re-placement comes after 5 s or 76 m)
  await page.keyboard.press('Digit2');const b0=await cam();await page.waitForTimeout(1500);const b1=await cam();assert.ok(Math.hypot(b1.x-b0.x,b1.z-b0.z)<1e-6,'B stays put');
  await page.keyboard.up('ArrowUp');
- // A again: the wheel (a SnapTiles extra) lengthens the leash and driving keeps it
+ // A again: the wheel (a RigidCraft extra) lengthens the leash and driving keeps it
  await page.keyboard.press('KeyR');await page.keyboard.press('Digit1');await page.waitForTimeout(1500);const a0=await cam();
  await page.locator('#view').hover();await page.mouse.wheel(0,400);await page.waitForTimeout(1500);const a1=await cam();assert.ok(a1.dist>a0.dist*1.3,`wheel lengthens the leash ${a0.dist}→${a1.dist}`);
  assert.deepEqual(errors,[]);console.log('Runtime camera: A leash 8 m/+2 m at the original bearing, I/O 9.44–87.89° shared, F8–F12/Ctrl/digits A–J, E overhead, J orbit, H and B fixed, wheel leash pass');

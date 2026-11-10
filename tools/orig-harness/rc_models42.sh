@@ -16,7 +16,7 @@ EOT
 }
 W2='Weight(){ W:Weight(){ } }'
 W3='Weight(){ W:Weight(){ W:Weight(){ } } }'
-# legs 30° down carry the body on a 0.52 m lever: spring 0.2 dips ~0.08 m on landing in SnapTiles, 0.05 bottoms out
+# legs 30° down carry the body on a 0.52 m lever: spring 0.2 dips ~0.08 m on landing in RigidCraft, 0.05 bottoms out
 mk land_30_0.2_0.5 30 0.2 0.5 "$W2"
 mk land_30_0.1_0.5 30 0.1 0.5 "$W2"
 mk land_30_0.05_0.5 30 0.05 0.5 "$W2"

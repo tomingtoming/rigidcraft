@@ -5,7 +5,7 @@
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 D=$(cd "$(dirname "$0")" && pwd); RC=$HOME/rc/RC15B26; RES=$RC/Resources; M=$HOME/rc/models
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs/terrain
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs/terrain
 mkdir -p "$OUT"
 scene=$1 p=${2:-2500} secs=${3:-24}
 [ -f "$RES/Land.x.orig" ] || cp "$RES/Land.x" "$RES/Land.x.orig"

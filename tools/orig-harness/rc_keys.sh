@@ -5,7 +5,7 @@ set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 RC=$HOME/rc/RC15B26
 RES=$RC/Resources
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs
 [ -f "$RES/System.rcs.orig" ] || cp "$RES/System.rcs" "$RES/System.rcs.orig"
 [ -f "$RES/Basic.txt.orig" ] || cp "$RES/Basic.txt" "$RES/Basic.txt.orig"
 cp "$RES/Basic.txt.orig" "$RES/Basic.txt"

@@ -6,8 +6,8 @@ quarantined WSL2 + wine 9 prefix, and the numbers below come from driving it wit
 harness (`Resources/System.rcs` replaced by a Lua script that sets wheel `POWER` through `_SET`,
 dumps the rest pose of every chip and writes the per-frame core state with `_FOPEN/_FPUTS`).
 `tools/orig-compare.ts` (since 2026-11-02 `core/src/bin/orig_compare.rs`; likewise drive-, geom-, step- and
-terrain-compare became `core/src/bin/{replay,terrain}.rs`, see tools/README.md) replays the same experiment headless in SnapTiles and prints the same
-columns. Raw logs: `D:\snaptiles-models\quarantine\original\runs\*.csv` (not in this repo).
+terrain-compare became `core/src/bin/{replay,terrain}.rs`, see tools/README.md) replays the same experiment headless in RigidCraft and prints the same
+columns. Raw logs: `D:\rigidcraft-models\quarantine\original\runs\*.csv` (not in this repo).
 
 ## Measured against the original exe
 
@@ -17,16 +17,16 @@ columns. Raw logs: `D:\snaptiles-models\quarantine\original\runs\*.csv` (not in 
 | folded child offset | 0.3 m beyond the hinge and 0.3 m down for a 90° fold | wheel hub at x = 0.91 vs frame 0.61, y −0.30 |
 | chip thickness / ground contact | a flat chip rests with its center **0.015 m** above the ground (box contact, not a 0.3 m sphere) | core-only, core+chip, Cube rest heights |
 | spawn | the core starts **1.0 m + the model's reach along z** (tile centres from the core) above the ground and the model falls from there: core only 1.03, core+one chip 1.63, chips three deep 2.83, four deep 3.43, the Basic car 2.37 (its wheels add ~0.13; option 2 wheels 2.64). Weights on the sides (x) add nothing | first-frame `_Y` of 14 runs vs their rest height |
-| mass table | Core/Chip/Rudder 25.2, Frame 12.6, Wheel 79.17 (hub+tire) → Basic = 467.87 kg | HUD `Weight=467.87` for 16 chips, SnapTiles table gives 467.88 |
+| mass table | Core/Chip/Rudder 25.2, Frame 12.6, Wheel 79.17 (hub+tire) → Basic = 467.87 kg | HUD `Weight=467.87` for 16 chips, RigidCraft table gives 467.88 |
 | chip numbering | a Wheel takes two numbers: first `_TYPE` 3 (hub, does not spin), second `_TYPE` 4 (spins) | rest dump |
 | wheel radius | option 0 **0.30 m**, option 1 **0.45**, option 2 **0.60**; the wheel's mass does not change with option (4 wheels + core + 2 chips = 392.27 kg for option 0, 1 and 2) | v / `_WY(wheel)` = 0.300 / 0.455 / 0.611 while rolling; wheelmass_* HUD |
 | wheel drive | force ∝ power, independent of radius: torque-equivalent **0.13 N·m per power unit** (Basic with all four wheels at power 2500: a₀ = 8.5 m/s²; linear in power from 500 to 2500) | power sweep 500…2500 (two front wheels), basic_nopower (four) |
 | drive fade | the push falls linearly with wheel spin: a/a₀ = 0.877 at ω≈22 rad/s, 0.62 at ω≈69 → zero at ≈ **180 rad/s** at power 1000 and 2500. Above that the zero point grows with power: a **sliding** wheel settles at 135 rad/s (power 5000) and 376 (10000) against ~1030 N of ground force, which fits τ = 0.13·p·(1 − ω/ω0) with ω0 = p/20.6 (243, 486) | 180-frame run to 22 m/s; spin_p5000/p10000 |
 | drag | **none measurable** coasting at 22 m/s (Δv = 0.02 m/s over 1 s) | turn_basic frames 210–240 |
-| wheel spin | **powered wheels slide and spin up**: at power 5000 the powered wheels read `_WY` 90→135 rad/s within 3 s while rolling would be 10→70; at 10000 240→376; the unpowered wheels read v/r. With the fade above, a wheel inertia of ½mr² (3.6 kg·m²) and no extra drag reproduce 53→128 and 171→370 in SnapTiles (`WHEEL_SPIN_DYNAMICS`). At power 20000 the car wheelies and lands on its back with the wheels spinning past 1200 rad/s | spin_p2500…20000 (`harness_wheels.rcs`) |
+| wheel spin | **powered wheels slide and spin up**: at power 5000 the powered wheels read `_WY` 90→135 rad/s within 3 s while rolling would be 10→70; at 10000 240→376; the unpowered wheels read v/r. With the fade above, a wheel inertia of ½mr² (3.6 kg·m²) and no extra drag reproduce 53→128 and 171→370 in RigidCraft (`WHEEL_SPIN_DYNAMICS`). At power 20000 the car wheelies and lands on its back with the wheels spinning past 1200 rad/s | spin_p2500…20000 (`harness_wheels.rcs`) |
 | wheel in the air | a powered wheel **does** spin up in the air: during the spawn drop `_WY` reaches 65/111/184 rad/s by frame 10 at power 2500/5000/10000 (inertia ≈ 0.35 × ½mr²); the earlier wheel_up probe (folded 90° up, `_SET POWER`) read 0 and is superseded | spin_p2500/5000/10000 frames 1–16 |
-| motor reaction | the motor torque reacts on the chassis: the falling car pitches nose-up **before touching down** (`_EX` 0.27 at power 2500, 0.71 at 10000 by frame 16), the leading end rising; RLW is the reactionless wheel. SnapTiles applies the motor (and brake) torque to the body about the wheel axis: 0.21 / 0.55 rad | spin_p2500/p10000 |
-| landing | the spinning wheels shove the car off the touchdown (power 2500: 0.31→2.17→2.92 m/s over frames 20–30 while `_WY` drops 109→46→27; power 10000: 2.0 m/s at frame 30) — the wheel's stored momentum goes into the car. SnapTiles: wheel inertia 0.35 × ½mr² (air spin-up 70/126/251 rad/s at frame 10 vs 65/111/184), impact load for grip capped at 30× the static share, and a slip that closes within a step transfers the momentum that stopped the wheel; landings now 3.2/5.1/10.7/17.5 m/s at frames 30/45/90/150 for 2500 (original 2.9/5.2/11.1/17.9) and 2.9/5.6/11.1/18.7 for 10000 (2.0/4.5/10.8/19.3) | spin runs frames 10–150 |
+| motor reaction | the motor torque reacts on the chassis: the falling car pitches nose-up **before touching down** (`_EX` 0.27 at power 2500, 0.71 at 10000 by frame 16), the leading end rising; RLW is the reactionless wheel. RigidCraft applies the motor (and brake) torque to the body about the wheel axis: 0.21 / 0.55 rad | spin_p2500/p10000 |
+| landing | the spinning wheels shove the car off the touchdown (power 2500: 0.31→2.17→2.92 m/s over frames 20–30 while `_WY` drops 109→46→27; power 10000: 2.0 m/s at frame 30) — the wheel's stored momentum goes into the car. RigidCraft: wheel inertia 0.35 × ½mr² (air spin-up 70/126/251 rad/s at frame 10 vs 65/111/184), impact load for grip capped at 30× the static share, and a slip that closes within a step transfers the momentum that stopped the wheel; landings now 3.2/5.1/10.7/17.5 m/s at frames 30/45/90/150 for 2500 (original 2.9/5.2/11.1/17.9) and 2.9/5.6/11.1/18.7 for 10000 (2.0/4.5/10.8/19.3) | spin runs frames 10–150 |
 | `_WY(wheel)` while rolling | = v / r exactly | all drives |
 | fold sign | positive `angle` folds **down** on all four sides (`FOLD_SIGN` all +1) | fold30: all four 30° chips sit 0.15 m lower |
 | `_EX` | +0.52 rad for a chip folded 30° down on the **N** side (−0.52 on S) | fold30 |
@@ -38,28 +38,28 @@ columns. Raw logs: `D:\snaptiles-models\quarantine\original\runs\*.csv` (not in 
 | Jet | thrust **0.145 N per power unit along +normal** (≈ power/6.9): a 530 kg wheeled car with a stand-up jet at power 10000 accelerates at a constant 2.74 m/s² over 6 s, at 5000 at 1.38 m/s², same for wheel option 0 and 2. (The 3-wheeler's script assumes power/6 to hover; the plane sample's ground run was too noisy to pin it) | rolle_* runs, plane_full |
 | attribute evaluation | a literal `power=5000` on a Jet produced no thrust; `power=Engine` with a Val default did. Attributes bound to a Val are re-evaluated every frame (so `_SET` on them is lost) | jetc_* vs jet_*_val runs |
 | servo | a commanded joint angle is applied **within one frame** (Rudder: 60° one frame after the Val changes), **without momentum**: snapping a Frame holding two Weights 45° pitches the light core 31° and the arm −14° (inertia-weighted split about the hinge), the load then swings from rest and the model settles with the core at 45° | servo_rudder, servo_hinge_load |
-| servo with a planted foot | a 277 kg body on two 1.2 m legs, the S hip stepped 90°→60° (foot would swing up/out): one frame later the leg has swung ~24° and the body side ~6° — the **pure inverse-inertia split, no hold for the grounded foot** — and the uncommanded N leg has swung ~20° outward with its foot lifted 0.27 m, returning within 10 frames; the stance ends 6 cm lower with both legs splayed. Stepped 60°→90° (foot driven into the ground): the body rises 0.17 m in a frame, the other foot lifts briefly, then settles 6 cm higher. So the original's joints are compliant in the transient (they flex and recover), which rapier's welded joints cannot reproduce; SnapTiles' grounded-side hold is not what the original does | leg_lift / leg_push / leg_swing (`harness_servo2.rcs`, chips 0–9 logged) |
+| servo with a planted foot | a 277 kg body on two 1.2 m legs, the S hip stepped 90°→60° (foot would swing up/out): one frame later the leg has swung ~24° and the body side ~6° — the **pure inverse-inertia split, no hold for the grounded foot** — and the uncommanded N leg has swung ~20° outward with its foot lifted 0.27 m, returning within 10 frames; the stance ends 6 cm lower with both legs splayed. Stepped 60°→90° (foot driven into the ground): the body rises 0.17 m in a frame, the other foot lifts briefly, then settles 6 cm higher. So the original's joints are compliant in the transient (they flex and recover), which rapier's welded joints cannot reproduce; RigidCraft' grounded-side hold is not what the original does | leg_lift / leg_push / leg_swing (`harness_servo2.rcs`, chips 0–9 logged) |
 | joint stiffness | rigid: a Frame(spring=0.5) holding a 4× Weight at 1.2 m does not sag; spring=0.1 sags 0.1° | sag_arm, sag_arm_spring05/01 |
 | plate aero | drag per chip / v² from a jet-pushed **rolling** car (no sliding contact): **0.22 at 15°, 1.2 at 30°, 2.85 at 45°, ≈4 at 50°**, constant over 5–19 m/s (∝ v²). At 60–90° the original's car stalls near 1–3 m/s and oscillates (coefficient jumps 7 → 27 → 400 between 5 and 6 m/s: not a v² law, the readme's "steep rise toward 90°"). Normal force per chip ≈ v²·(6.7·sin^1.5 α + 9.3·sin^8 α) reproduces 0–45° within the mass offset; flat plates feel nothing to 40 m/s; a flat 3-plate sled lifts off at ≈40 m/s with 9–18° of pitch | rollb_* (0/15/30/45/50/60/75/90), sled_*, aero_* |
 | drive limit | per wheel **1.1 × its dynamic (contact) load**: the Basic-layout car (468 kg, two powered wheels) saturates at 4.4 m/s² at power 5000 and 4.2 at 10000 (≈1030 N per wheel). Its powered axle is the S one and `+Engine` drives it toward S, so that axle **leads** and unloads to ~990 N under acceleration (rapier contact impulses) — 1030/990 ≈ 1.05. The 871 kg version (four Weights) is not saturated at 5000 (4.0 m/s², fade-limited); the corpus bike (RCModel1, power 5000 on a 0.45 m rear wheel) accelerates like the original (14.4 m/s at 3 s, 22.5 at 5 s) only with the load transfer, with a static share it saturates and falls. The earlier 4-wheel "1.1 g" was mostly drive fade | turn_a10_p5000/p10000, heavy4_a10_p5000, bike_e5000, basic_nopower_p5000 |
-| lateral grip | per wheel **1.2 × its load** while rolling, shared with the drive in a friction circle (drive first); once the tyre **slides**, kinetic friction of μ·load opposes the contact patch's total slip (lengthwise spin slip plus sideways velocity), so a hard-spinning wheel keeps little lateral grip. Measured at steer 10°/20°: lateral acceleration 1.05–1.13 g with little drive (power 1000), 0.9–1.0 g at 2500, 0.4–0.7 g (10°) / 0.77–0.89 (20°) at 5000 with the powered axle sliding, 0.2 g at 10000; the 871 kg car 0.86–0.88 at 5000. SnapTiles: 1.01 / 0.93 / 0.58 / 0.73 / 0.16 / 0.88 g | turn_a10/a20_p1000…10000, heavy4_a10_p1000…5000 (`tools/orig-harness/turndiff.py`) |
+| lateral grip | per wheel **1.2 × its load** while rolling, shared with the drive in a friction circle (drive first); once the tyre **slides**, kinetic friction of μ·load opposes the contact patch's total slip (lengthwise spin slip plus sideways velocity), so a hard-spinning wheel keeps little lateral grip. Measured at steer 10°/20°: lateral acceleration 1.05–1.13 g with little drive (power 1000), 0.9–1.0 g at 2500, 0.4–0.7 g (10°) / 0.77–0.89 (20°) at 5000 with the powered axle sliding, 0.2 g at 10000; the 871 kg car 0.86–0.88 at 5000. RigidCraft: 1.01 / 0.93 / 0.58 / 0.73 / 0.16 / 0.88 g | turn_a10/a20_p1000…10000, heavy4_a10_p1000…5000 (`tools/orig-harness/turndiff.py`) |
 | wheel load | the load each tyre carries is the contact normal force rapier measured in the last step (`measureTyreLoads()`, smoothed 0.3), falling back to the static lever rule about the centre of mass over the current hub positions before the first contact (the contact points of the previous step lag at speed and load the trailing axle too much) | turn runs, bike_e5000 |
-| `_VX`/`_VZ` signs | `_VZ` is **positive toward +z (S)**, `_VX` positive toward **+x = W**: the original is left-handed (W = +x), so a car driving S with its nose yawing toward E and the velocity lagging outward reads `_VX` > 0, `_VZ` > 0. SnapTiles mirrors `_X/_GX/_VX/_VZ` (and the `_XX…_ZZ` axis vectors, unmeasured) so model Lua sees the original's numbers | turn_a10_p1000 (orig `vx` +0.6…+1.8 while sliding outward), basic_p1000 (`vz` > 0 while z grows) |
+| `_VX`/`_VZ` signs | `_VZ` is **positive toward +z (S)**, `_VX` positive toward **+x = W**: the original is left-handed (W = +x), so a car driving S with its nose yawing toward E and the velocity lagging outward reads `_VX` > 0, `_VZ` > 0. RigidCraft mirrors `_X/_GX/_VX/_VZ` (and the `_XX…_ZZ` axis vectors, unmeasured) so model Lua sees the original's numbers | turn_a10_p1000 (orig `vx` +0.6…+1.8 while sliding outward), basic_p1000 (`vz` > 0 while z grows) |
 | brake | Coulomb: a 530 kg four-wheel car with `brake=10` sheds **2.2 m/s² (0.22 g)**, with `brake=50` **7.7 m/s² (0.78 g)**, at any speed — ≈0.022 g per brake unit, saturating near 0.8 g | brake3_10/50 (thrust kept on) |
 | Lua globals | a Val is reachable from Lua only by its **upper-case** name (`Engine=0` in Lua did nothing; `A=60` worked) | brake3 runs |
 | sliding friction | plates pushed along the ground by a stand-up jet (1452 N): **Chip ≈ 0** (7.8 m/s² for 7.7 available), **Frame ≈ 0.1** (9.2 for 10.6), **Weight does not move** (μ ≥ 0.3) — the readme's ordering Chip < Frame < Weight. The earlier 0.23 came from a sled whose hanging jet dragged on the ground | fric_chip/frame/weight |
-| settling | the 3-wheeler rests with its core 0.65 m above ground; SnapTiles needed 16 rapier solver iterations (8 let the chain of six servo joints sag 0.4 m and the belly plate touched the ground) | wheel3 rest dump, lowest-corner.ts |
+| settling | the 3-wheeler rests with its core 0.65 m above ground; RigidCraft needed 16 rapier solver iterations (8 let the chain of six servo joints sag 0.4 m and the belly plate touched the ground) | wheel3 rest dump, lowest-corner.ts |
 | key table | `_KEY(n)`: 0 ↑, 1 ↓, 2 ←, 3 →, 4 Z, 5 X, 6 C, 7 A, 8 S, 9 D, 10 V, 11 B, 12 F, 13 G, 14 Q, 15 W, 16 E; nothing else (digits, space, Enter, Shift/Ctrl/Alt, Tab, F2–F12, punctuation, keypad) maps to a number | keys.csv (xdotool pressed 81 keys one per 0.75 s, `harness_keys.rcs` logged `_KEY(0..39)`) |
 | Arm direction | the shell leaves along the Arm's **own forward edge** (away from the chip it hangs on), not its normal: an Arm standing on an upright column recoils vertically; an Arm lying flat at the nose fires N along the ground | armcar2 (vertical kick), armline (hit on a chip placed on the forward line) |
 | Arm shell | **300 m/s** per the bundled readme (15B13 "150 → 300 m/s"; not measured, the flight to a 3 m target takes under a frame); charge **5000 per frame** (power held ≥ option fires every 11 frames at option 50000, every 21 at 100000, the first shot one frame after power rises — the charge fills while power is 0); shot energy = `option`; recoil impulse **≈ 0.0043 N·s per unit of energy** (+0.42 m/s per shot on a 518 kg car at 50000, +1.7 at 200000) | armline_o50000/200000, armcar3_o50000/200000 |
 | Arm damage | durability `_T` 10000 → 5000 on a 25.2 kg Chip at option 50000 (= 2.52 × energy / mass); a Frame (12.6 kg) is destroyed by one such shot, a Chip by one at 200000. A destroyed chip reads **−1, comes loose and flies off** with the shot (≈ 50 m/s along it). A Frame was missed by the first three shots (smaller hit sphere?) | armline_o50000 (+_Frame), armline2_o200000 (chip 9 position) |
 | fuel | capacities per chip as the readme says: Core 2,000,000, Chip/Rudder/Trim 1,000,000, Frame types 500,000, Weight 6,000,000 (× option), Wheel/Jet/Arm 0 (`_FUELMAX` of a 4-wheel car = 6,000,000). With regulation **E off** (normal fuel) a wheel burns **0.025 × \|power\| per frame** at any speed or load (two wheels at 2500: 125/frame, also while airborne), a Jet **0.1 × \|power\|** (10000 → 1000/frame), an Arm its charge 1:1 (5000/frame while charging). Fuel is drawn from every chip in proportion to what it holds. With E on (the default) nothing is consumed | fuel_wheel / fuel_jet / fuel_arm (`harness_fuel.rcs`: `_SETREG("E",0)`) |
-| H key ball | pressing H three times adds no ball with the stock input configuration (the readme requires a keyboard "reset" in Configure Input first); `_ADDBALL(r, x, y, z, density)` is a scenario function and SnapTiles has no scenario layer | ball1/ball3.png |
+| H key ball | pressing H three times adds no ball with the stock input configuration (the readme requires a keyboard "reset" in Configure Input first); `_ADDBALL(r, x, y, z, density)` is a scenario function and RigidCraft has no scenario layer | ball1/ball3.png |
 | Cowl shapes | option 0 plate, **1 outline** (edges only, open inside), **2 disc** inscribed in the tile, 3/4 right triangles (apex NE / NW), **5 tombstone** (attached half square, far half a semicircle, flat), 6/7 plates | cowl_0…7.png, cowl_montage.png |
-| car1 / 3wheel at speed | on the original, Up held: the corpus car1 (670 kg, four 0.3 m wheels) accelerates at a constant 13.5 m/s² from 8 to 54.6 m/s and is then thrown 30 m into the air within 15 frames (something far down the original's world; the 3-wheeler likewise at 20 m/s after 20 s) — not aero lift. SnapTiles car1 reached 180 m/s by frame 300 because its two Trim plates (sinα 0.18) pressed it down with 8 kN at 90 m/s and the dynamic load bought grip; with the sustained grip load capped at 1.5× the static share it reaches 38 m/s (the original 54). Joint handedness (Trim roll, Rudder yaw, Chip fold) was re-measured with child chips and matches SnapTiles exactly | drive_car1, drive_3wheel, sign_trim/rudder/trimE/chip |
+| car1 / 3wheel at speed | on the original, Up held: the corpus car1 (670 kg, four 0.3 m wheels) accelerates at a constant 13.5 m/s² from 8 to 54.6 m/s and is then thrown 30 m into the air within 15 frames (something far down the original's world; the 3-wheeler likewise at 20 m/s after 20 s) — not aero lift. RigidCraft car1 reached 180 m/s by frame 300 because its two Trim plates (sinα 0.18) pressed it down with 8 kN at 90 m/s and the dynamic load bought grip; with the sustained grip load capped at 1.5× the static share it reaches 38 m/s (the original 54). Joint handedness (Trim roll, Rudder yaw, Chip fold) was re-measured with child chips and matches RigidCraft exactly | drive_car1, drive_3wheel, sign_trim/rudder/trimE/chip |
 | small-angle plate aero | tail plates at 5/8/10/−10/15° on the rolling car: speed deficit after 10 s 0.14/0.38/0.66/0.51/1.57 m/s → drag/v² ≈ 0.020/0.053/0.092/0.071/0.22 per chip, within 20% of the sin^1.5 law (0.015/0.048/0.084) | rollb_5/8/10/m10 |
-| rolling fade at high power | the sliding-wheel ω0 = power/20.6 is not applied to rolling wheels: a rolling wheel fades to zero push at 180 rad/s whatever the power (car1 on the original stops near 54 m/s = 180 rad/s on 0.3 m wheels); without this cap SnapTiles' car1 ran away to 400 m/s and fell through the ground | drive_car1, spin runs |
-| axes | W is **+x**, N is −z, y up in the original (SnapTiles keeps W = −x internally and mirrors the x of `_X/_GX/_VX` and the axis vectors in the Lua API; the Euler and angular-velocity readouts are matched numerically, not by mirroring) | rest dumps, turn runs |
+| rolling fade at high power | the sliding-wheel ω0 = power/20.6 is not applied to rolling wheels: a rolling wheel fades to zero push at 180 rad/s whatever the power (car1 on the original stops near 54 m/s = 180 rad/s on 0.3 m wheels); without this cap RigidCraft' car1 ran away to 400 m/s and fell through the ground | drive_car1, spin runs |
+| axes | W is **+x**, N is −z, y up in the original (RigidCraft keeps W = −x internally and mirrors the x of `_X/_GX/_VX` and the axis vectors in the Lua API; the Euler and angular-velocity readouts are matched numerically, not by mirroring) | rest dumps, turn runs |
 | Trim / Rudder signs | consistent with `JOINT_SIGN` (+1 / −1) | trimrudder30 positions |
 | arrow keys | 0 ↑ 1 ↓ 2 ← 3 → (then Z X C A S D V B F G Q W E) | bike (0 engine, 1 brake), tonbo, zrobo |
 | script cadence | 30 frames/s, scripts see `_FPS()` 30 | HUD, docs |
@@ -69,7 +69,7 @@ columns. Raw logs: `D:\snaptiles-models\quarantine\original\runs\*.csv` (not in 
 | Jet option 1/2 | balloon: buoyancy straight up | airship corpus (unchanged) |
 | Lua dialect | 5.0 era (`math.mod`, `string.format('%d', 1.5)`, full-width spaces) | corpus scripts |
 
-## Implemented from these (SnapTiles)
+## Implemented from these (RigidCraft)
 
 `TILE` 0.6, `TILE_T` 0.03, `WHEEL_RADIUS0` 0.3 with ×1.5 / ×2, `WHEEL_TORQUE_PER_POWER` 0.13,
 `WHEEL_SPIN_FADE` 180, no linear/angular damping, contact-force tyres, `TUNE_DEFAULTS`
@@ -92,7 +92,7 @@ steered car, see the table). The load is the normal force the tyre collider carr
 original; before the first contact the static lever rule (`distributeLoads()`) fills in. Spin is integrated for the render and `_WY`. Result against the original
 (Basic car, all four wheels at power 2500 until frame 150, bare ground):
 
-| frame | original v (m/s) | SnapTiles v | original z | SnapTiles z |
+| frame | original v (m/s) | RigidCraft v | original z | RigidCraft z |
 |---|---|---|---|---|
 | 59 | 7.89 | 8.14 | 3.6 | 4.1 |
 | 119 | 21.57 | 21.47 | 33.6 | 34.7 |
@@ -132,7 +132,7 @@ acceleration, `_WY` = v/r). Hence the contact-force wheel above.
 | item | current value | where |
 |---|---|---|
 | gravity | 9.8 | `world.ts` |
-| plate aero at 60–90° | the original stalls and oscillates (drag far above v²·sin²); SnapTiles rolls on at 4–7 m/s | `AERO_K2/AERO_P2` |
+| plate aero at 60–90° | the original stalls and oscillates (drag far above v²·sin²); RigidCraft rolls on at 4–7 m/s | `AERO_K2/AERO_P2` |
 | Arm shell life / range in air | 4 s placeholder (readme: 150 m under water); hit sphere of a Frame; damage on a Weight (the probe crashed the exe) | `ARM_SHELL_LIFE`, `ARM_HIT_RADIUS` |
 | fade of a **rolling** wheel above power 3700 | the ω0 = power/20.6 zero point is fitted on sliding wheels; a rolling wheel at high power is assumed to follow the same torque law (the original's power-5000 car still accelerated at 4.1 m/s² at 29.6 m/s, consistent with it). Corpus car1 now reaches 230 km/h | `WHEEL_SPIN_PER_POWER` |
 | sliding friction direction | the kinetic-friction-opposes-total-slip law reproduces the 7 reference turns within ~10%; a lateral floor or independent caps do not (tried 2026-10-28) | `TYRE_LATERAL_FLOOR` (0) |
@@ -141,7 +141,7 @@ acceleration, `_WY` = v/r). Hence the contact-force wheel above.
 
 ## Known failures
 
-- Corpus walkers (2026-10-28, Up held on the original from 4 s): the original walks all three — `zrobo` 2.4 m in 16 s, `2walk` 32 m (fast, curving), `4leg2` 23 m straight, all upright. SnapTiles: `zrobo` and `4leg1` walk with `SERVO_HOLD` 1000 (zrobo even faster than the original, 13 m); `2walk` flips at spawn with 1000 but stands and walks 18 m with hold 1 (or with the inertia split off); `4leg2` stands with 1000 or 30 and rolls over once it walks with any setting (hold 1: 3 m then ez 1.4). No single hold works for all three: the grounded-side hold is a heuristic for the original's momentum-free servo, not its model. Headless runs with `--key=0:120:540`. Prototype (2026-10-28 evening, knobs `allJoints`, `solverIterations`, `servoHold`, `jointStiff`): every hinge its own body on a hard-limited revolute joint. With 64 solver iterations and the pure inertia split (no hold) the leg probe's transient matches the original (N foot lifts 0.22 m vs 0.27, settles within 10 frames, body 1.16 vs 1.14), zrobo walks 6.5 m (the original 2.4, welded SnapTiles 13), 4leg1 and 4leg2 walk, 2walk walks when not dropped at spawn but is launched 13 m by its touchdown, and car1 rolls over at 50 m/s (its wheels hang on folded frames that now flex; routing the tyre forces to the root makes it worse, a stiff position motor on every joint does not help). 16 or 32 iterations let the 3-wheeler sag. A ground rule on the split (knob `servoGround`: a side the ground would block only turns as far as the ground allows, the rest of the step goes to the other side) lets 2walk survive its touchdown and walk 17 m with the joint model (zrobo 6.7, 4leg1 2.8); adding a lift of the model for a foot driven straight down (as the original's +0.17 m) makes everything bouncy and was dropped. Re-tested with the fade and load caps (`allJoints`+64 iterations+no hold+`servoGround`): zrobo 6.7 m, 2walk 17 m, 4leg1 2.8 m, bike/segway/3wheel fine, but 4leg2 falls at spawn and car1 rolls over at 20 m/s (its wheels on folded frames flex under the tyre forces applied to the small wheel body). Not adopted: the welded default keeps car1/bike/zrobo/4leg1; the joint model is the right structure but needs its own sprint (touchdown with a teleporting gait, tyre forces on small bodies). Tried and rejected (2026-10-28): replacing the hold by a rigid lift of the whole model out of the ground after each teleport (the ground as a pure position constraint) — it injects potential energy every frame and launches zrobo 11 m into the air; also pure inertia split without hold (2walk walks, zrobo and 4leg2 fall) and no split (2walk stands, the others fall).
+- Corpus walkers (2026-10-28, Up held on the original from 4 s): the original walks all three — `zrobo` 2.4 m in 16 s, `2walk` 32 m (fast, curving), `4leg2` 23 m straight, all upright. RigidCraft: `zrobo` and `4leg1` walk with `SERVO_HOLD` 1000 (zrobo even faster than the original, 13 m); `2walk` flips at spawn with 1000 but stands and walks 18 m with hold 1 (or with the inertia split off); `4leg2` stands with 1000 or 30 and rolls over once it walks with any setting (hold 1: 3 m then ez 1.4). No single hold works for all three: the grounded-side hold is a heuristic for the original's momentum-free servo, not its model. Headless runs with `--key=0:120:540`. Prototype (2026-10-28 evening, knobs `allJoints`, `solverIterations`, `servoHold`, `jointStiff`): every hinge its own body on a hard-limited revolute joint. With 64 solver iterations and the pure inertia split (no hold) the leg probe's transient matches the original (N foot lifts 0.22 m vs 0.27, settles within 10 frames, body 1.16 vs 1.14), zrobo walks 6.5 m (the original 2.4, welded RigidCraft 13), 4leg1 and 4leg2 walk, 2walk walks when not dropped at spawn but is launched 13 m by its touchdown, and car1 rolls over at 50 m/s (its wheels hang on folded frames that now flex; routing the tyre forces to the root makes it worse, a stiff position motor on every joint does not help). 16 or 32 iterations let the 3-wheeler sag. A ground rule on the split (knob `servoGround`: a side the ground would block only turns as far as the ground allows, the rest of the step goes to the other side) lets 2walk survive its touchdown and walk 17 m with the joint model (zrobo 6.7, 4leg1 2.8); adding a lift of the model for a foot driven straight down (as the original's +0.17 m) makes everything bouncy and was dropped. Re-tested with the fade and load caps (`allJoints`+64 iterations+no hold+`servoGround`): zrobo 6.7 m, 2walk 17 m, 4leg1 2.8 m, bike/segway/3wheel fine, but 4leg2 falls at spawn and car1 rolls over at 20 m/s (its wheels on folded frames flex under the tyre forces applied to the small wheel body). Not adopted: the welded default keeps car1/bike/zrobo/4leg1; the joint model is the right structure but needs its own sprint (touchdown with a teleporting gait, tyre forces on small bodies). Tried and rejected (2026-10-28): replacing the hold by a rigid lift of the whole model out of the ground after each teleport (the ground as a pure position constraint) — it injects potential energy every frame and launches zrobo 11 m into the air; also pure inertia split without hold (2walk walks, zrobo and 4leg2 fall) and no split (2walk stands, the others fall).
 - `weapon/cannon.rcd` indexes an undefined Val (`math.mod(nil)`): the model itself.
 
 ## Root causes worth remembering
@@ -193,7 +193,7 @@ pose corrections does not prevent the fall, whereas replacing just the six leg
 fold constraints does.
 
 An 18-tile standing fixture reproduces the static defect: literal angles stand,
-identical values bound to unchanged variables fall in SnapTiles with hold=0. Both
+identical values bound to unchanged variables fall in RigidCraft with hold=0. Both
 versions produce identical stable traces in the original. Production behavior is
 unchanged by this investigation. See [sprints 45–47](sprints-45-47.md) for controls,
 measurements, limitations and the required separation of static hold from active
@@ -218,7 +218,7 @@ Measured on 1.5B26 under wine with `tools/orig-harness/harness_camera.rcs` (scen
 (xdotool key presses, a screenshot every 3 s; the on-screen frame counter syncs presses to log frames).
 Probe models from `rc_camera_models.sh`: the Basic-layout car circling at Engine 2500 / Handle 15, and
 the same car parked. The Basic car drives toward **S**, so "behind travel" is in front of its N edge.
-Raw logs/shots: `D:\snaptiles-models\quarantine\original\runs\camera\`. Views are the scenario API's
+Raw logs/shots: `D:\rigidcraft-models\quarantine\original\runs\camera\`. Views are the scenario API's
 0–9 = A–J (bundled function list v1.2: `_SETVIEWTYPE`, `_GETVIEW`, `_SETVIEWZOOM`, `_SETVIEW`, `_SETVIEWUP`).
 
 | item | original | evidence |
@@ -241,7 +241,7 @@ Raw logs/shots: `D:\snaptiles-models\quarantine\original\runs\camera\`. Views ar
 | mouse | left/right drags (200 px sideways, 120 px down) and wheel up/down on the view moved nothing in view A | mouseA |
 
 Not measured: F/G with detached chips, the CCD inset's own pose, what decides A's spawn bearing, whether
-mouse input works in other views, and the vertical lag of A (height over bumps varied 1.2–3.4 m). SnapTiles currently uses its own camera (chase/orbit/top/onboard on
+mouse input works in other views, and the vertical lag of A (height over bumps varied 1.2–3.4 m). RigidCraft currently uses its own camera (chase/orbit/top/onboard on
 1–4 and a button, mouse drag/wheel/pinch); none of the above is implemented yet.
 
 ## 2026-10-31: kerb strike below the tyre radius
@@ -249,25 +249,25 @@ mouse input works in other views, and the vertical lag of A (height over bumps v
 Probe: `tools/orig-harness/rc_step.sh` swaps `Resources/Land.x` for a generated land
 (`make_step_land.py`: 4 m ground cells at y = 50, a box h m tall over x −10…10, z 6…36) and drives the
 default Basic car with Val Engine 2500 (`basic_drive_2500.txt`) into it; `harness_step.rcs` logs core
-and wheel heights. SnapTiles replays the same with `bun tools/step-compare.ts`; `stepdiff.py` compares.
+and wheel heights. RigidCraft replays the same with `bun tools/step-compare.ts`; `stepdiff.py` compares.
 Land notes: the 4th material row (Emissive) is the original's rolling/static/dynamic friction (readme
 15B11): an Emissive of 0.2 held the car to 0.5 m/s. Tyre radius 0.30 m; impact at 6.6–6.9 m/s.
 
-| step | original | SnapTiles |
+| step | original | RigidCraft |
 |---|---|---|
 | 0.10 m | climbs in 3 frames, speed −17% (6.93→5.78), pitch ≤ 0.12 rad, all wheels past the edge 0.7 s after impact | the leading wheels are thrown 2 m up, the car pitches to 1.54 rad (near vertical), stalls to 0.08 m/s; past the edge after 1.7 s |
 | 0.20 m | speed −60%, pitch ≤ 0.40 rad, past after 0.8 s | stalls (−99%), pitch 0.92 rad, past after 4.7 s |
 | 0.25 m | speed −79%, pitch ≤ 0.53 rad, past after 1.1 s | bounced back at −3 m/s and never climbs (15 s) |
 
-The original's wheel rolls up a kerb lower than its radius with a moderate speed loss. SnapTiles' tyre (a
+The original's wheel rolls up a kerb lower than its radius with a moderate speed loss. RigidCraft' tyre (a
 frictionless load sphere plus ray grip) takes the edge as a stiff collision: an upward/backward kick
-instead of a climb. Raw logs: `D:\snaptiles-models\quarantine\original\runs\step\`.
+instead of a climb. Raw logs: `D:\rigidcraft-models\quarantine\original\runs\step\`.
 
 Fixed the same day (`kerbSprings()` in `world.ts`, `TYRE_SOFT_KERB`): a tyre whose ground contact is an edge
 (normal more than 30° from vertical), or that has sunk more than 3 cm climbing one, gets a spring-damper along
 the edge normal instead of the rigid contact (a contact-pair hook switches that pair off; rapier only runs hooks
 when an event queue is passed). Stiffness sags the wheel's static load 2 cm, damping 0.3 of critical, chosen by
-sweeping against the three runs. The spring counts toward the tyre's load. Result (original → SnapTiles):
+sweeping against the three runs. The spring counts toward the tyre's load. Result (original → RigidCraft):
 
 | step | speed loss | max pitch | all wheels past the edge |
 |---|---|---|---|
@@ -286,19 +286,19 @@ speed loss. Two dead ends worth remembering: forces added inside a rapier query 
 ranked by `terraindiff.py`): the Basic car at Engine 2500 over 12 generated lands. Lessons for the probe
 itself: the drop and ramp at a 50 m base prompted reruns at 150 m. The later Core trials below do not support the inferred sea threshold at y=49. Land stops colliding near z = 210 in these runs (compare before z = 200). Remaining differences, largest first:
 
-| scene | original | SnapTiles | status |
+| scene | original | RigidCraft | status |
 |---|---|---|---|
 | wall 2 m, hit at 10.5 m/s | stops dead at the wall | thrown back at −7.6 m/s, then wanders off | fixed by `WALL_NO_REBOUND`: after each step, a model touching a near-vertical ground face (|n.y| < 0.5) that approached it faster than 1 m/s loses the velocity carrying it away from that face (applied equally to all its bodies, so joints are untouched). Now stops at z = 14.1 like the original (pitch 0.50 vs 0.21). Cause: the reversal happens inside rapier's step and needs the jointed pair: a one-body car rebounds −1.5, plain rapier boxes −0.2, two rapier bodies on a locked revolute −2. It grows with solver iterations (4: −2.7, 16: −7.6, 64: −32), i.e. joint correction, not contact softness (contact_natural_frequency has no effect); rapier-compat 0.21 exposes no joint stiffness |
 | drop 1.0 m (both bases) | stops at z ≈ 9, its leading wheels at the edge, and jitters there | drives off | original quirk, cause unknown (a 0.5 m drop is fine in both) |
 | ramps 10/20/30°, ditch 1 m | reaches z = 199 by the cut-off | 163–177; tips on the 20° ramp; the leading wheels drop into the ditch (pitch 0.75 vs 0.08–0.13) | ditch fixed: its far lip is a shallow ground edge whose rigid contact launched the leading wheels 1.3 m; kerb springs now key on edge-vs-face (a ray from the hub along the contact normal meets a face with the same normal) instead of a 30° tilt, so shallow edges are soft too and faces up to 30° stay rigid. Now pitch 0.04 vs 0.08, score 0.05. Ramps: most of the gap was the probe — a separate wedge and plateau left an internal edge at the crest; one convex solid gives scores 0.34/0.63/0.67 and no tip. They still climb ~10% slower. Turning off the motor reaction while the tyre touches the ground (knob `wheelReactionGround`) closes more of the ramp gap (0.31/0.43/0.50) and flat acceleration, but makes the wall rebound −11 m/s and flip the car, so it stays on until the wall is solved |
-| steps, bump, 0.5 m drop, flat | — | within a few metres (flat: SnapTiles accelerates ~3% slower, as known) | fine |
+| steps, bump, 0.5 m drop, flat | — | within a few metres (flat: RigidCraft accelerates ~3% slower, as known) | fine |
 
 **Tier 2, corpus geometry** (`rc_geom_corpus.sh` dumps every chip at frames 1 and 30 for 97 corpus models;
 `tools/geom-compare.ts`, `geomrank.py`): the assembled poses agree for almost all models (frame-1 error
-≤ 0.01 m). The original numbers each Wheel/RLW as two chips (a type-3 rim, then the tyre); SnapTiles leaves
-that index free, so chip numbers agree, only the rim chip itself is absent from SnapTiles' list. Frame-1
+≤ 0.01 m). The original numbers each Wheel/RLW as two chips (a type-3 rim, then the tyre); RigidCraft leaves
+that index free, so chip numbers agree, only the rim chip itself is absent from RigidCraft' list. Frame-1
 outliers are models whose scripts set joint angles on the first frame (mukade's leg IK runs before the
-original's first dump but after SnapTiles') and a few still unexplained (dragon wing tips 1.05 m, Talon,
+original's first dump but after RigidCraft') and a few still unexplained (dragon wing tips 1.05 m, Talon,
 boidbit, ender, DUCKER ≤ 0.3 m). Frame-30 differences up to 27 m (satellite, Vic viper, qb-xt, ender,
 prin) come from what the models do in their first second and belong to tier 3 (driving runs).
 
@@ -306,15 +306,15 @@ prin) come from what the models do in their first second and belong to tier 3 (d
 
 `rc_drive_corpus.sh` runs every corpus model on a flat 400 m land (150 m base, 50 m faces: 4 m faces gave
 20k faces and ~1 fps) for 600 frames, once with no input and once holding Up from ~4 s; the scenario logs
-whether key 0 is held each frame, so `tools/drive-compare.ts` replays the same frames in SnapTiles and
+whether key 0 is held each frame, so `tools/drive-compare.ts` replays the same frames in RigidCraft and
 `driverank.py` ranks the trajectories (relative to the frame-30 position, cut at 180 m). 194 runs. Groups:
 
 | group | models | what differs |
 |---|---|---|
-| A. SnapTiles falls over with no input | Talon, DUCKER, hebel, hebel_c, talet_s, ika, coin, tw-2, tp-2, patagun3, heri1, … (~12) | the original lands from the spawn drop and stands; SnapTiles starts tilting at the landing (frames 10–30) and falls. Many-jointed standing models (spring/damper joints, servos); likely the same root as the known walker failures |
-| B. only the original goes wild | ender, skal, danboo | the original reaches 78–110 m/s with no input; SnapTiles stays put. Original instability or scripts — not yet examined |
-| C. only SnapTiles flies off | boidbit | rises to 107 m vs 14.5 m |
-| D. vehicles under Up | car2, segway, 1wheel, been3, tp-2, tw-2 | the original drives ~180 m; SnapTiles falls over or lags |
+| A. RigidCraft falls over with no input | Talon, DUCKER, hebel, hebel_c, talet_s, ika, coin, tw-2, tp-2, patagun3, heri1, … (~12) | the original lands from the spawn drop and stands; RigidCraft starts tilting at the landing (frames 10–30) and falls. Many-jointed standing models (spring/damper joints, servos); likely the same root as the known walker failures |
+| B. only the original goes wild | ender, skal, danboo | the original reaches 78–110 m/s with no input; RigidCraft stays put. Original instability or scripts — not yet examined |
+| C. only RigidCraft flies off | boidbit | rises to 107 m vs 14.5 m |
+| D. vehicles under Up | car2, segway, 1wheel, been3, tp-2, tw-2 | the original drives ~180 m; RigidCraft falls over or lags |
 
 Most other runs agree within a few metres.
 
@@ -325,7 +325,7 @@ wall rebound grew with the count (4: −2.7, 16: −7.6, 64: −32 m/s). One sub
 iterations (`SOLVER_ITERATIONS` 1, `PGS_ITERATIONS` 16) keeps the joint stiffness the 3-wheeler needed and
 the eight steady-turn references (speed error 10.8 → 10.7%, yaw-rate error 0.083 → 0.082 rad/s against the
 original), and the wall now stops the car at z = 14.1 with 0.06 rad of pitch (original 0.21), so the
-`WALL_NO_REBOUND` clamp added earlier was removed. Corpus driving: runs where SnapTiles falls but the
+`WALL_NO_REBOUND` clamp added earlier was removed. Corpus driving: runs where RigidCraft falls but the
 original stands 25 → 11, all upright mismatches 33 → 20, runs scoring above 1 49 → 35; corpus geometry after
 1 s: models off by more than 1 m 28 → 22. Still falling: Talon, DUCKER, zrobo, 2leg1, 15cpHeri, been3, car2.
 
@@ -338,20 +338,20 @@ fixes (car2 0.06, segway 0.08), gives the best corpus totals (runs scoring above
 mismatches 20 → 18) and terrain scores (ramps 0.25/0.44/0.48, wall 0.54), at a turn error of 12.4% / 0.096.
 The airborne reaction stays full (the measured spawn-drop pitch). Still open in D: 1wheel (108 vs 82 m),
 tp-2 (179 vs 37 m), car1's top speed (66 vs 31 m/s: the high-power fade of a rolling wheel is still a guess),
-and RCModel1 bike, which the original barely moves under Up (8 m) while SnapTiles rides 190 m.
+and RCModel1 bike, which the original barely moves under Up (8 m) while RigidCraft rides 190 m.
 
 **Follow-up, 2026-11-01 — joints with spring < 1 (group A).** Talon still fell. Its Lua converges the legs
-to the same Val values in both programs, and the converged pose assembles identically (0.000 m), but SnapTiles
+to the same Val values in both programs, and the converged pose assembles identically (0.000 m), but RigidCraft
 moved every animated joint to its command instantly. On the original (`rc_models31.sh`, `rc_models32.sh`:
 an arm standing on a heavy base, commanded 30°) a joint with spring < 1 follows its command like a damped
 spring: ω = 15.5·spring^1.5 rad per 30 fps frame (spring 0.05 reaches the command in ~16 frames, 0.1 in ~6,
 0.2 in ~2, 0.5 and 1 in one), damping ratio ≈ 0.6 for damper ≥ 0.5 (0.5 and 1 give identical runs) and ≈ 0.25
-at damper 0–0.1; a 3× heavier arm is ~20% slower. SnapTiles now filters the command of such joints through
+at damper 0–0.1; a 3× heavier arm is ~20% slower. RigidCraft now filters the command of such joints through
 that spring, wrapping the error the short way round (G.txt's legs command "current + 20°" and wrap at ±180°).
 Corpus: runs scoring above 1 30 (was 33), median 0.43 → 0.40; carrot, pla3 and trimpla no longer creep
 8–20 m while the original stands still; G now walks but in another direction than the original (0.39 → 0.77).
 Upright mismatches unchanged (18). Talon still falls: the original's joints also give under the landing
-(the body sinks 0.18 m and settles), SnapTiles' joints are rigid against external load and the model
+(the body sinks 0.18 m and settles), RigidCraft' joints are rigid against external load and the model
 rebounds. Making spring joints compliant to load is the next structural step; still falling also DUCKER,
 zrobo, 2leg1, 15cpHeri, been3.
 
@@ -361,13 +361,13 @@ Settled elevation 44.3/44.2/43.6/41.3/30.3/0.2° at spring 1/0.5/0.2/0.1/0.05/0.
 is a torsion spring of ≈ 3.7·10⁶·spring² N·m/rad (the 2026-10-27 "rigid" sag probe had its arm lying on the
 ground). The landing swings these arms 6–15° and they recover. Such joints are now revolute joints with a
 force-based position motor (`SPRING_K`, `SPRING_K_P`, damping ratio `SPRING_ZETA` over the subtree's inertia;
-the earlier command filter stays only for the `springJoints: false` knob). Settled sag in SnapTiles
+the earlier command filter stays only for the `springJoints: false` knob). Settled sag in RigidCraft
 44.2/41.9/30.6/0.0°. The oscillation at low damper is under-reproduced (rapier's implicit motor adds damping).
 With the extra bodies, one substep with 16 PGS iterations let 3wheel's rear axle (a TrimF spring) roll the car
 over on landing; `PGS_ITERATIONS` 48 holds it (cost +0.02 ms per frame on the largest corpus models; steady-turn
 references 12.4 → 12.7%, 0.096 → 0.099 rad/s). Moving tyre forces past the spring to the chassis also fixed
 3wheel but broke the RCModel1 bike (its steering is a spring) and was dropped. Corpus: upright mismatches
-18 → 12, runs where only SnapTiles falls 10 → 5 (zrobo, been3, 2leg1, DUCKER idle now stand), runs scoring above
+18 → 12, runs where only RigidCraft falls 10 → 5 (zrobo, been3, 2leg1, DUCKER idle now stand), runs scoring above
 1 30 → 28, median 0.40 → 0.33. Still falling: Talon, 15cpHeri, DUCKER under Up.
 
 **Follow-up, 2026-11-01 — the ground contact and what is left of group A.** `rc_ground.sh` (flat land, 150 m
@@ -376,19 +376,19 @@ Chips, five, nine and 25 Weights (25–2500 kg) all rest at −0.003…−0.005 
 ground is not a soft penalty contact (rapier's `contact_natural_frequency` has no effect in this build either).
 Tents of two plates hinged down 30°/60° (Chip, Frame and Arm alike) rest exactly where a **zero-thickness**
 0.6 m plate would (60°: 0.5198 m above the flat core on the default land, geometry 0.5196; two chips deep
-1.0378, geometry 1.0392). SnapTiles' plates collide with the 0.03 m thickness, so its models stand ~2 cm higher
+1.0378, geometry 1.0392). RigidCraft' plates collide with the 0.03 m thickness, so its models stand ~2 cm higher
 (median over 85 upright corpus runs); a thin collider (knob `plateT`) leaves the corpus scores unchanged
 (median 0.33 → 0.32, mismatches 12), so the default stays. Talon without its Lua now matches the original's
 settled pose within 0.10 m; with the Lua (legs moving during the spawn drop) it is 0.47 m off and still falls
 after the landing — unresolved. 15cpHeri lifts on Trim blades carried by RLW rotors at power 60000:
-SnapTiles does not turn a wheel's children, so it has no rotor lift (a separate feature, not a joint issue).
+RigidCraft does not turn a wheel's children, so it has no rotor lift (a separate feature, not a joint issue).
 
 **2026-11-01 — rotors.** `rc_models34.sh`: a horizontal wheel on a weighted base carrying two Trims (or two
 Weights), powered from frame 60. The carried chips turn with the wheel and spin up in the air to a steady
 26.1 / 43.8 / 64.3 rad/s at power 5000 / 20000 / 60000 (time constants 12 / 5 / 2.4 frames); two Weights at
 20000 reach only 20.5. Blades pitched 10° run ~2% slower; RLW and Wheel spin alike. +power turns them clockwise
 about the wheel normal in the original's frame. Fit (`ROTOR_*`, steady speeds within 2%):
-I·dω/dt = 0.111·power − 1.6·10⁻⁴·m^1.56·ω^2.74 with I = Σ m·d² and m the carried mass. SnapTiles now turns a
+I·dω/dt = 0.111·power − 1.6·10⁻⁴·m^1.56·ω^2.74 with I = Σ m·d² and m the carried mass. RigidCraft now turns a
 wheel's carried chips by its spin angle (pose and velocity, so plate aero gives rotor lift), integrates the spin
 by that law in the air, applies the motor reaction for Wheel (not RLW) and keeps the air drag's moment about
 the rotor axis off the body. Colliders of carried chips do not turn. A wheel carrying more than half of the
@@ -402,20 +402,20 @@ rest of the model (2leg1's and 4leg2's "head wheel" axles) stays rigid. 15cpHeri
   rolling wheel that keeps pushing past 180 rad/s: `TYRE_LOAD_CAP_SUSTAINED` 1.5 → 3 and `ROLL_FADE_SCALES` (the
   power-scaled fade zero point, ω0 = power/20.6, now also while rolling). car1 under Up: 11.3/23.3/36.7/46/56/69 m/s
   at 30-frame steps (original 11.9/25.9/38.7/51/62/68); score 0.20 → 0.08. The original then stops at 68.5 m/s
-  (its wheels' `_H` turns −100000) and SnapTiles does not. Steady-turn references 12.7 → 11.7%, 0.099 → 0.094 rad/s.
+  (its wheels' `_H` turns −100000) and RigidCraft does not. Steady-turn references 12.7 → 11.7%, 0.099 → 0.094 rad/s.
 - **Jet thrust is 1/6 N per power** (the readme's "6 power = 1 N"): two flat Jets lifting a 98.7 kg core
   (`rc_models37.sh`) leave the ground at power 3000 each but not 2800. The 0.145 of 2026-10-28 came from a
   jet-pushed wheeled car.
 - **`_AZ` is a tilt, not an Euler roll** (`rc_models38.sh`, `harness_axes2.rcs`): an upside-down chip reads
   `_AZ` ≈ 0 (Euler roll ±π) and one turned over about its forward axis reads the roll negated; `_AX` = asin(−Lz·up)
-  already was. SnapTiles' `_AZ` is now asin(Lx·up). tp-2 steers by a flipped body chip: with the Euler roll its
+  already was. RigidCraft' `_AZ` is now asin(Lx·up). tp-2 steers by a flipped body chip: with the Euler roll its
   hover controller saturated every jet at ±100000; now it flies (Up 0.42 → 0.15) and hovers (idle 2.63 → 0.86,
   though it climbs 0.13 m/s where the original holds 3.0 m).
 - **Rotor spin integration** is sub-stepped and stops at the drag/motor balance (a rotor that touched the ground at
   speed diverged to NaN in 15cpHeri under Up).
 
 1wheel was not a sign error: the original yaws ~160° while idle, which flips its Euler pitch; it then rides at
-7.5 m/s against SnapTiles' 5.8. RCModel1's bike stops in the original after 4.7 m/s, nose up 0.25 rad, with Up held
+7.5 m/s against RigidCraft' 5.8. RCModel1's bike stops in the original after 4.7 m/s, nose up 0.25 rad, with Up held
 (about 2.8 kN of extra resistance): most likely its two side stands, lowered below 5 m/s by its Lua, dragging on
 their edges — the friction of a plate's edge on the ground is not measured (Frame faces slide at 0.1). Open.
 Corpus: runs scoring above 1 25 → 21, median 0.33 → 0.29, upright mismatches 10.
@@ -430,28 +430,28 @@ tips it forward.
 **2026-11-01 — groups B and C, tp-2's hover.**
 - **`_WEIGHT()` is the mass still attached to the core** (`harness_weight.rcs`): 176.4 → 50.4 kg once `_SPLIT` cuts a
   Chip+Weight off, while `_CHIPS()` keeps counting the split chips. boidbit splits its 16 jet "bits" off every frame
-  and hovers its body on `_WEIGHT()`; counting the bits made SnapTiles' body climb at 5 m/s to 106 m (group C).
+  and hovers its body on `_WEIGHT()`; counting the bits made RigidCraft' body climb at 5 m/s to 106 m (group C).
   Now it hovers at 11.7 m (original 11.3 → 14.3); score 50.5 → 1.4.
 - **A Jet of option 2 (air balloon) gives no force in the air** (`rc_models40.sh`); option 1 (hydrogen) lifts.
-  tp-2 carries two option-2 jets (power 1200 and 4000) that SnapTiles counted as 867 N of buoyancy: it climbed while
+  tp-2 carries two option-2 jets (power 1200 and 4000) that RigidCraft counted as 867 N of buoyancy: it climbed while
   hovering. Now it holds 3.4 m (original 3.0) and under Up runs 177.8 m at up to 34.2 m/s (original 179.3, 33.7).
-- The original clamps Lua-written Vals to their min/max like SnapTiles (`valclamp`).
+- The original clamps Lua-written Vals to their min/max like RigidCraft (`valclamp`).
 - Plate edges dragging on the ground barely brake (`rc_models39.sh`: sleds riding on plates folded down 30/60° accelerate
   almost freely), so RCModel1's bike does not stop on its stands. In the original its steering (spring 0.012) flops
   sideways while it stands still for 4 s and the turned front wheel stops it (screenshot `bikelate.png`; it rides
-  fine when powered from the start); SnapTiles' steering stays within 8°. Open.
+  fine when powered from the start); RigidCraft' steering stays within 8°. Open.
 - Group B (ender, skal, danboo) is the original's own breakdown: ender's core sinks to −1.3 m into the ground and
   its velocity jitters at 35–54 m/s while it barely moves. Not reproduced on purpose.
 Corpus: runs scoring above 1 21 → 20, median 0.29 → 0.28.
 
 **2026-11-01 — what is left, and why.**
 - **Weak spring joints** (`rc_models41.sh`, a short arm, ~184 N·m): the settled sag still follows 3.7·10⁶·spring²
-  down to spring 0.012 (0.03: 36.4° vs SnapTiles 36.3°; 0.02: 23.2° vs 22.5°; 0.012 and 0.008 fall to the ground in
+  down to spring 0.012 (0.03: 36.4° vs RigidCraft 36.3°; 0.02: 23.2° vs 22.5°; 0.012 and 0.008 fall to the ground in
   both); the original only falls more slowly (seconds). So RCModel1's bike steering (spring 0.012) is not too stiff
-  in SnapTiles; what keeps it from flopping while parked is presumably the tyre's sideways grip at standstill.
+  in RigidCraft; what keeps it from flopping while parked is presumably the tyre's sideways grip at standstill.
   Not changed (it governs every vehicle).
 - **1wheel** (`harness_axes4.rcs`): all chip axes match the original. Two plates of its flywheel face the direction
-  of travel and brake SnapTiles' rider with ~350 N each at 5.8 m/s; the original rides at 7.5 m/s and yawed 160°
+  of travel and brake RigidCraft' rider with ~350 N each at 5.8 m/s; the original rides at 7.5 m/s and yawed 160°
   while idle, i.e. its flywheel (a Wheel with reaction) spun up after the landing — spinning plates average less drag.
   A transient of its control; not chased further.
 - **First frame**: running only the first frame's physics before the script (knob `firstScriptAfterPhysics`)
@@ -460,7 +460,7 @@ Corpus: runs scoring above 1 21 → 20, median 0.29 → 0.28.
 
 **2026-11-02 — spring joints under a landing load (Talon), on the Rust core.** Talon's idle run has no attitude
 control (its Lua only poses the legs); it lands with its centre of mass at the rear edge of its feet in both programs
-(the original at z 0.08 against support near 0.23) and the original stands, SnapTiles tips forward over 40 frames.
+(the original at z 0.08 against support near 0.23) and the original stands, RigidCraft tips forward over 40 frames.
 More solver substeps make it fall sooner (not a numerical instability). Doubling the spring joints' damping ratio
 (`SPRING_ZETA` [0.1, 0.4] → [0.2, 0.8]) makes Talon idle and DUCKER under Up stand and improves the corpus (runs
 above 1 21 → 17, upright mismatches 10 → 8; DUCKER idle and fw worse) but breaks the commanded step response
@@ -469,7 +469,7 @@ above 1 21 → 17, upright mismatches 10 → 8; DUCKER idle and fw worse) but br
 two legs folded A° down through spring joints, level Frame feet, dropped from the spawn height; replay with
 `orig_compare --self --chips=20 --frames=240`. Body-over-foot height h (legs 30°, rigid 0.30):
 
-| case | settled h orig / SnapTiles | overshoot above settled | dip below settled |
+| case | settled h orig / RigidCraft | overshoot above settled | dip below settled |
 |---|---|---|---|
 | spring 1 | 0.276 / 0.300 | 0.02 / 0.01 | 0.01 / 0.00 |
 | 0.2, damper 0.5 | 0.244 / 0.286 | 0.02 / 0.20 | 0.05 / 0.15 |
@@ -481,7 +481,7 @@ two legs folded A° down through spring joints, level Frame feet, dropped from t
 The original's joints give at the impact within one frame, dip only a few centimetres below where they settle, never
 rebound, and creep to the settled angle over 10–20 frames; the damper value makes no difference. They also settle
 1.6–2.3× lower than the 3.7·10⁶·spring² torsion spring that fits the cantilevered arm (`rc_models33.sh`), and even
-spring 1 sags 0.024 (feet slide outward only 1–2 cm). SnapTiles' motor spring stores the impact and throws the body
+spring 1 sags 0.024 (feet slide outward only 1–2 cm). RigidCraft' motor spring stores the impact and throws the body
 0.1–0.26 m up. Tried on the Rust core and not adopted: the damping scaled ×2/×4 (rebound less, step response too slow);
 rapier 0.36's joint softness (a locked joint, natural frequency f0·spring^p, damping ratio 1–30) with the command
 applied as a servo — it can match this table (f0 60, p 1, ratio 10) and the step response (0.56/1.10/1.02 against
@@ -492,10 +492,10 @@ mass-normalised soft constraint; its law under external load is still open.
 **2026-11-02 — the same, scaled (one round).** `rc_models43.sh` (`law_<spring>_L<segments>_w<option>`): the
 rc_models42 body with its four Weights at option 1/2/4 (529/932/1739 kg in all) on legs of one or two Frames, 30°
 down, damper 0.5. Settled fold angle (30° unloaded) and an effective stiffness from the static torque estimate
-(half the weight at the foot minus the leg's own weight; the estimate reads SnapTiles' motor springs ~1.4× too stiff,
+(half the weight at the foot minus the leg's own weight; the estimate reads RigidCraft' motor springs ~1.4× too stiff,
 so compare the columns rather than with 3.7·10⁶·spring²):
 
-| case | fold orig / SnapTiles | k estimate orig / SnapTiles (N·m/rad) |
+| case | fold orig / RigidCraft | k estimate orig / RigidCraft (N·m/rad) |
 |---|---|---|
 | spring 1, L1, 932 kg | 28.3° / 30.0° | 121 000 / rigid |
 | spring 1, L2, 554 kg | 29.1° / 30.0° | 214 000 / rigid |
@@ -504,7 +504,7 @@ so compare the columns rather than with 3.7·10⁶·spring²):
 | 0.1, L1, 529 / 932 / 1739 kg | 23.2 / 18.9 / 12.4° — 28.1 / 26.3 / 22.8° | 17 000 / 20 000 / 24 000 — 60 000 / 57 000 / 56 000 |
 | 0.1, L2, 554 / 958 kg | 21.5 / 16.2° — 26.0 / 22.4° | 24 000 / 27 000 — 49 000 / 48 000 |
 
-In this load case the original's spring joints are 2–5× softer than SnapTiles' (the gap shrinks with load and with a
+In this load case the original's spring joints are 2–5× softer than RigidCraft' (the gap shrinks with load and with a
 longer, heavier leg beyond the joint), and its spring-1 joints give too (≈1.5·10⁵ N·m/rad, as the 2026-10-27 arm's
 0.7° under 1913 N·m). A damping proportional to stiffness (c = k·T, the ODE-like form that would make a light
 subtree overdamped and a heavy one ring) passes the step response at T = 0.01–0.02 s (spring 0.2: 0.51/1.07/0.98
@@ -517,7 +517,7 @@ bridge built as one chain from foot A (the Core): leg A up 30°, spring joint A,
 spring joint B, leg B down 30°, foot B. Both joints carry the same torque; beyond joint A is the body and leg B
 (heavy), beyond joint B only leg B and foot B (light). Settled sag (30° minus the fold):
 
-| case | orig A / B | SnapTiles before (A / B) | now (A / B) |
+| case | orig A / B | RigidCraft before (A / B) | now (A / B) |
 |---|---|---|---|
 | spring 1, w2 | 1.2 / 0.8° | 0 / 0 | 0 / 0 |
 | 0.2, w1 / w2 / w4 | 1.4 / 1.9, 2.3 / 3.3, 4.2 / 5.9° | 0.5 / 0.5, 1.0 / 0.9, 2.3 / 1.9° | — / —, 1.0 / 2.6, 2.2 / 4.0° |
@@ -526,7 +526,7 @@ spring joint B, leg B down 30°, foot B. Both joints carry the same torque; beyo
 So the give of a spring joint depends on what hangs beyond it: with a heavy subtree it matches the 3.7·10⁶·spring²
 torsion spring (as the cantilevered arm did), with a light one it gives 2.4–2.8× more. From these and the
 rc_models43 legs the stiffness factor is ≈ 0.32 for subtrees of 9–19 kg·m² about the axis, ≈ 0.5 at 33 kg·m², 1 for
-the arm. SnapTiles now scales SPRING_K by clamp((I/300 kg·m²)^0.31, 0.32, 1) (`SPRING_K_INERTIA_*`); the step
+the arm. RigidCraft now scales SPRING_K by clamp((I/300 kg·m²)^0.31, 0.32, 1) (`SPRING_K_INERTIA_*`); the step
 response and the arm's sag tests are unchanged, `a_spring_joint_gives_more_when_its_subtree_is_light` checks this
 bridge. Corpus: runs above 1 21 → 18, median 0.29, upright mismatches 10 (Talon idle now stands, 3.52 → 0.58;
 RCModel1 bike idle 1.58 → 0.37, human 1.04 → 0.33, 3wheel 0.96 → 0.50; the bike under Up now rides 227 m and falls
@@ -535,7 +535,7 @@ the bike's stop, the landing rebound of rc_models42 (the original's spring joint
 changes their stiffness, not that).
 
 **2026-11-03 — load damping of spring joints (adopted, fitted on the corpus).** The landing rigs above show the
-original's spring joints taking an impact without rebound whatever their damper; SnapTiles' damping is over the
+original's spring joints taking an impact without rebound whatever their damper; RigidCraft' damping is over the
 subtree's inertia (a light leg), so under a load coming through the foot it is nearly undamped. Damping over the rest
 of the model's inertia as well (ratio 0.3, independent of damper) removes the rebound in the rigs (overshoot 0.00–0.04
 against the original's 0.01–0.03) but, applied to every joint, slows the commanded step response (an arm on a
@@ -543,7 +543,7 @@ grounded base) and worsens the corpus. Applied only when the joint's subtree tou
 model does not — a stance leg while the other foot is up; the joint then swings the rest of the model — it leaves the
 step response and every other run unchanged and makes Talon walk under Up like the original (1.60 → 0.11): corpus
 runs above 1 18 → 17, median 0.29 → 0.28, upright mismatches 10 → 9 (`SPRING_ZETA_LOAD`, `World::grounded_tiles`).
-The two-legged landing rigs keep rebounding in SnapTiles (both feet are down, so the rule does not apply): the
+The two-legged landing rigs keep rebounding in RigidCraft (both feet are down, so the rule does not apply): the
 original's absorption there is still unexplained.
 
 
@@ -557,24 +557,24 @@ Four symmetric arms were then attached to the same Core. At frame 20 above the -
 
 ## 2026-11-06: forward drag of a twin-jet raft in water
 
-The B26 water harness ran the SnapTiles raft geometry on a flat floor 3 m below the surface. Both jets received the same scripted thrust starting at frame 90. The probe omits colour and manual steering. A trial with the full sample controls produced a startup error. Only the controlled variant provided measurements.
+The B26 water harness ran the RigidCraft raft geometry on a flat floor 3 m below the surface. Both jets received the same scripted thrust starting at frame 90. The probe omits colour and manual steering. A trial with the full sample controls produced a startup error. Only the controlled variant provided measurements.
 
-| Thrust per jet | Original speed at frame 180 (m/s) | SnapTiles straight basin (m/s) |
+| Thrust per jet | Original speed at frame 180 (m/s) | RigidCraft straight basin (m/s) |
 |---:|---:|---:|
 | 0 | 0.006 | 0.003 |
 | 1200 | 3.239 | 2.836 |
 | 2400 | 6.046 | 5.716 |
 | 3600 | 8.386 | 8.068 |
 
-The 2400 run was held out when selecting horizontal drag. At that setting the original travelled 9.99 m between frames 89 and 180, versus 9.50 m in the basin. At frame 180 the original's pitch was within 0.002 rad of level, versus about 0.08 rad in SnapTiles. A follow-up ran full thrust through frame 540. The original held 10.97 m/s and a pitch within 0.001 rad of level. The basin reached 10.33 m/s with 0.083 rad of pitch. The initial drag coefficient of 1.0 was closer over three seconds but allowed the stock raft to capsize before the 150 m marker under sustained key input. At 1.27 the raft cleared 150 m with three different initial input delays. Sideways resistance and turns remain uncalibrated. The earlier inlet courses keep their force law for replay compatibility.
+The 2400 run was held out when selecting horizontal drag. At that setting the original travelled 9.99 m between frames 89 and 180, versus 9.50 m in the basin. At frame 180 the original's pitch was within 0.002 rad of level, versus about 0.08 rad in RigidCraft. A follow-up ran full thrust through frame 540. The original held 10.97 m/s and a pitch within 0.001 rad of level. The basin reached 10.33 m/s with 0.083 rad of pitch. The initial drag coefficient of 1.0 was closer over three seconds but allowed the stock raft to capsize before the 150 m marker under sustained key input. At 1.27 the raft cleared 150 m with three different initial input delays. Sideways resistance and turns remain uncalibrated. The earlier inlet courses keep their force law for replay compatibility.
 
 Raw CSVs in the local quarantine: `runs/raft_isolated_controls_20261106_s67` (1200), `runs/raft_long_3600_20261106_s69` (540 frames), `runs/raft_controlled_{0,3600}_20261106_s67`, and `runs/raft_validation_2400_20261106_s68`. Frame 180 reports local forward velocity. The small original pitch makes it comparable to world forward speed on these runs.
 
 ### Exported raft controls in B26
 
-The exact UTF-8 file saved by the SnapTiles editor was loaded as Basic.txt in the offline B26 probe. The first export, with arithmetic inside the two Jet power attributes, stopped at the startup error dialog. Splitting only the Key entries across lines gave the same result. Moving their sum and difference into Lua and binding the jets to named Val variables allowed the export to load.
+The exact UTF-8 file saved by the RigidCraft editor was loaded as Basic.txt in the offline B26 probe. The first export, with arithmetic inside the two Jet power attributes, stopped at the startup error dialog. Splitting only the Key entries across lines gave the same result. Moving their sum and difference into Lua and binding the jets to named Val variables allowed the export to load.
 
-The final sample returns the levers toward zero before mixing them on key release. In a 500-frame SnapTiles trace with forward thrust, both steering directions and reverse, all tile positions and quaternion components matched the first export exactly. A version-1 record containing the old model and key inputs also cleared the inlet in 31.50 seconds in Chromium, Firefox and WebKit.
+The final sample returns the levers toward zero before mixing them on key release. In a 500-frame RigidCraft trace with forward thrust, both steering directions and reverse, all tile positions and quaternion components matched the first export exactly. A version-1 record containing the old model and key inputs also cleared the inlet in 31.50 seconds in Chromium, Firefox and WebKit.
 
 In B26 each run held a single physical arrow key in the private X display after the frame-60 cue. From frames 60 to 180 the forward run moved 21.59 m north and reverse moved 7.99 m south. At frame 90 the yaw angles with left and right were approximately -0.81 and +0.88 rad. The host polls the cue, so input can begin on slightly different frames. Local evidence: `quarantine/original/runs/raft_export_cases_20261106_s76` and `raft_final_{Up,Down,Left,Right}_20261106_s77`.
 
@@ -610,7 +610,7 @@ PART is Chip(), Frame(), or Weight(). Indices: Core=0, N=1, NN=2, S=3, W=4,
 E=5. Roll 90 puts W above and E below the core. Pitch 90 puts N/NN above and
 S below. Downward speeds are world-position differences × 30, not local `_VY`.
 
-| Model / posture | Height | Downward speed | B26 cut chips (first frame) | SnapTiles cut chips |
+| Model / posture | Height | Downward speed | B26 cut chips (first frame) | RigidCraft cut chips |
 |---|---:|---:|---|---|
 | Weight / roll 90 | 100 m | 43.68 m/s | none (repeated) | none |
 | Weight / roll 90 | 150 m | ~54 m/s | 5 (346) | 5 |
@@ -637,7 +637,7 @@ With A=1, Chip and Frame rolled 90 from 30 m reach 23.59 and 23.68 m/s without
 cuts. A nearly horizontal Chip reaches only 6.11 m/s; the preliminary 100 m
 case had not landed at frame 600 and is not counted as crash survival.
 
-Private raw evidence: `D:/snaptiles-models/quarantine/original/runs/crash-*`.
+Private raw evidence: `D:/rigidcraft-models/quarantine/original/runs/crash-*`.
 The fixed aircraft cases are `crash-plane-fixed-h{100,200,300}-p90-a0-u0` and
 include the exact self-authored model bytes. Early six-part runs predate the
 JSON metadata; their names encode part/height/roll/air/U. Example reproduction:
@@ -693,22 +693,22 @@ live in ignored `.shots/collision-plane-{before,after}.png`, not the repository.
 The current self-authored plane (including its Lua assist) was exported without
 comments/colours. Both engines received exactly the same model text. Power ramps
 by 600 per frame after frame 90 to 20,000 or 60,000 per Jet. A=1, G=1, E=1;
-flat 20 km terrain in B26 and bare ground in SnapTiles. Each run lasts 900 frames
+flat 20 km terrain in B26 and bare ground in RigidCraft. Each run lasts 900 frames
 (30 s), including settling/ramp time. B26 logs are scenario observations; native
 logs are after each simulation frame, so early comparisons can differ by about
 one script frame. Speed is the norm of local VX/VY/VZ, not one component.
 These are observed speeds, not established steady level-flight maxima.
 
-| Per-Jet power / U | B26 at 30 s | SnapTiles at 30 s | Interpretation |
+| Per-Jet power / U | B26 at 30 s | RigidCraft at 30 s | Interpretation |
 |---|---:|---:|---|
 | 20,000 / 0 | 15.3 km/h | 595.2 km/h | B26 loses chip 31 at frame 92, later chip 26; invalid top-speed comparison |
-| 60,000 / 0 | 23.5 km/h | 391.7 km/h | B26 similarly breaks; SnapTiles peak 519.5 km/h |
-| 20,000 / 1 | 223.8 km/h | 595.2 km/h | intact in both; B26 peak 281.1, altitude 4.75 m at end; SnapTiles 8.46 m and still accelerating |
+| 60,000 / 0 | 23.5 km/h | 391.7 km/h | B26 similarly breaks; RigidCraft peak 519.5 km/h |
+| 20,000 / 1 | 223.8 km/h | 595.2 km/h | intact in both; B26 peak 281.1, altitude 4.75 m at end; RigidCraft 8.46 m and still accelerating |
 | 60,000 / 1 | 56.7 km/h | 391.7 km/h | B26 reaches 504 km/h transiently then breaks at frame 282; not stable flight |
 
 Unbreakable did not prevent the high-power U=1 run's extreme failure. This does
 not contradict the controlled collision-drop observations: compliant-joint and
-servo overload is another mechanism and is still missing from SnapTiles. The
+servo overload is another mechanism and is still missing from RigidCraft. The
 low-speed tail failure and different controlled-flight trajectories prevent
 attributing the entire speed gap to a single aerodynamic coefficient.
 
@@ -722,18 +722,18 @@ At power 60,000 per Jet it reaches the same ceiling sooner (about frame 21)
 and remains bounded by 140 m/s, despite three times the force and no air drag.
 This is an observed velocity ceiling (504 km/h), not an aerodynamic terminal
 speed. Its precise internal per-chip/body implementation is not recovered.
-SnapTiles has no corresponding limit and its normal-air plane exceeds 140 m/s.
+RigidCraft has no corresponding limit and its normal-air plane exceeds 140 m/s.
 
 A further diagnostic keeps the plane's geometry/Val defaults but replaces the
 assist with only the throttle ramp, disables gravity after the first frame,
 and retains air/U=1. At frames 300/450/600/900, B26 gives
-131.4/243.6/350.0/503.8 km/h; SnapTiles gives 137.3/260.6/385.6/637.8 km/h.
+131.4/243.6/350.0/503.8 km/h; RigidCraft gives 137.3/260.6/385.6/637.8 km/h.
 Both encounter the ground and their passive joint/attitude trajectories differ;
 this is not a clean free-flight drag coefficient measurement. It shows closer
 mid-speed acceleration once feedback control is removed, followed by the missing
 ceiling. Lowering the sample throttle alone does not reproduce the original.
 
-Measurement caveat: SnapTiles currently stores A/G regulation flags but does not
+Measurement caveat: RigidCraft currently stores A/G regulation flags but does not
 apply them to aerodynamic forces/gravity. Initial native thrust-only CSVs and
 fixed-plane snap.csv are therefore INVALID controls and excluded. The flight
 binary rejects thrust-only mode; its fixed-plane mode explicitly zeroes the
@@ -746,7 +746,7 @@ Reproduction: tools/orig-harness/flight-probe.py --power 20000 --unbreakable 1
 The native counterpart is cargo run --bin flight -- <plane.txt> 900 1
 [fixed-plane]. All original executions use water-probe.py's offline namespace
 and executable SHA256 check; no original source/assets are included.
-Private raw evidence: D:/snaptiles-models/quarantine/original/runs/flight-*-20261106;
+Private raw evidence: D:/rigidcraft-models/quarantine/original/runs/flight-*-20261106;
 each directory retains plane.txt and original/plane_base0.csv. The two thrust
 runs are B26-only evidence. Product physics and sample power are unchanged by
 this measurement commit.
@@ -766,7 +766,7 @@ but still reaches approximately 140 m/s. Evidence is in private runs
 speed-diagonal-20261107 and speed-ballast-20261107, using the same offline harness.
 The corrected native twin-Jet and ballast fixtures both read 140 m/s at frame 120.
 
-SnapTiles now limits the mass-weighted translation of each connected model to
+RigidCraft now limits the mass-weighted translation of each connected model to
 140 m/s after each physics step. Every body in that component receives the same
 velocity correction, preserving angular and relative joint motion. Applying the
 limit independently to articulated bodies failed the existing banking test and
@@ -785,9 +785,9 @@ isolated before choosing the independent training plane's tuning.
 
 The intact 20,000-power B26 flight provides a 900-frame record of jet power and
 surface angle commands. Replaying chip 8 power, chip 27 elevator, minus chip 14
-aileron and chip 32 rudder on the same pre-tuning geometry in SnapTiles gives:
+aileron and chip 32 rudder on the same pre-tuning geometry in RigidCraft gives:
 
-| Frame | B26 (km/h) | SnapTiles live assist | SnapTiles recorded controls |
+| Frame | B26 (km/h) | RigidCraft live assist | RigidCraft recorded controls |
 | ---: | ---: | ---: | ---: |
 | 300 | 140.6 | 148.3 | 150.7 |
 | 450 | 231.9 | 244.0 | 260.8 |

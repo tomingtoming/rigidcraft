@@ -72,7 +72,7 @@ try {
   await page.click('#challenge-copy');
   await page.waitForFunction(() => document.querySelector('#challenge-result-status').textContent.includes('コピーしました'));
   await verifyCourseReplay(await page.evaluate(() => navigator.clipboard.readText()), time, sections);
-  const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem('snaptiles.challenge.oval-lap')));
+  const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem('rigidcraft.challenge.oval-lap')));
   const first = await stored();
   assert.equal(first.sectorDurations.length, 4);
   await page.reload();
@@ -80,7 +80,7 @@ try {
   assert.match(slower, /自己最速周より[\d.]+ 秒遅い/);
   assert.deepEqual(await stored(), first);
   // A legacy record has no split evidence. A slower drive cannot fill it.
-  await page.evaluate(() => localStorage.setItem('snaptiles.challenge.oval-lap', JSON.stringify({ time: 1, cost: 40 })));
+  await page.evaluate(() => localStorage.setItem('rigidcraft.challenge.oval-lap', JSON.stringify({ time: 1, cost: 40 })));
   await page.reload();
   const legacy = await runLap(40);
   assert.ok(!legacy.includes('自己最速周'));

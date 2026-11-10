@@ -236,8 +236,8 @@ impl LuaEngine {
         let setup = (|| -> mlua::Result<()> {
             let g = lua.globals();
             let debug: mlua::Table = g.get("debug")?;
-            lua.set_named_registry_value("snaptiles_getlocal", debug.get::<mlua::Function>("getlocal")?)?;
-            lua.set_named_registry_value("snaptiles_getinfo", debug.get::<mlua::Function>("getinfo")?)?;
+            lua.set_named_registry_value("rigidcraft_getlocal", debug.get::<mlua::Function>("getlocal")?)?;
+            lua.set_named_registry_value("rigidcraft_getinfo", debug.get::<mlua::Function>("getinfo")?)?;
             g.set("debug", Value::Nil)?;
             register(&lua)?;
             let out = self.out.clone();
@@ -593,7 +593,7 @@ pub fn watch_value(lua: &Lua, v: &Value, depth: u32) -> String {
 fn break_snapshot(lua: &Lua, line: i64) -> String {
     let mut parts = vec![line.to_string()];
     let (Ok(getlocal), Ok(getinfo)) =
-        (lua.named_registry_value::<mlua::Function>("snaptiles_getlocal"), lua.named_registry_value::<mlua::Function>("snaptiles_getinfo"))
+        (lua.named_registry_value::<mlua::Function>("rigidcraft_getlocal"), lua.named_registry_value::<mlua::Function>("rigidcraft_getinfo"))
     else {
         return parts.join("\u{1f}");
     };
@@ -703,8 +703,8 @@ fn model_level(getinfo: &mlua::Function) -> Option<i32> {
 /// a breakpoint condition, in an environment of the line's locals over the globals; an error counts as false
 fn condition_holds(lua: &Lua, condition: &str) -> bool {
     let run = || -> mlua::Result<bool> {
-        let getlocal: mlua::Function = lua.named_registry_value("snaptiles_getlocal")?;
-        let getinfo: mlua::Function = lua.named_registry_value("snaptiles_getinfo")?;
+        let getlocal: mlua::Function = lua.named_registry_value("rigidcraft_getlocal")?;
+        let getinfo: mlua::Function = lua.named_registry_value("rigidcraft_getinfo")?;
         let env = lua.create_table()?;
         if let Some(level) = model_level(&getinfo) {
             for i in 1..200 {

@@ -1,7 +1,7 @@
 // Oracle for the Rust core (core/PORT.md, stage 1): the TypeScript parse and rest-pose assembly of every corpus
 // model and every sample, as JSON for core/tests/oracle.rs.   bun tools/export-oracle.ts [outDir]
 //
-// Corpus: D:/snaptiles-models/quarantine/original/runs/geom/index.tsv (n<TAB>path), text in models/<n>.txt.
+// Corpus: D:/rigidcraft-models/quarantine/original/runs/geom/index.tsv (n<TAB>path), text in models/<n>.txt.
 // The assembly uses the default Val values the way Simulation does at load: Vals keyed by upper-case name (a later
 // declaration of the same name wins), no chip names yet.
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -10,8 +10,8 @@ import { parseRc, countNodes, type ChipNode, type RcModel } from '../src/rc/pars
 import { assemble, assemblyBottom } from '../src/model/assemble';
 import { SAMPLES } from '../src/samples';
 
-const GEOM = 'D:/snaptiles-models/quarantine/original/runs/geom';
-const OUT = resolve(process.argv[2] ?? 'D:/snaptiles-models/quarantine/oracle');
+const GEOM = 'D:/rigidcraft-models/quarantine/original/runs/geom';
+const OUT = resolve(process.argv[2] ?? 'D:/rigidcraft-models/quarantine/oracle');
 mkdirSync(OUT, { recursive: true });
 
 const v3 = (v: { x: number; y: number; z: number }) => [v.x, v.y, v.z];

@@ -1,4 +1,4 @@
-// Challenges (a SnapTiles extra, not in the original): a fixed course, a goal zone, a budget and a time limit. Build
+// Challenges (a RigidCraft extra, not in the original): a fixed course, a goal zone, a budget and a time limit. Build
 // any model within the budget and bring its Core into the goal; the run's time and the model's cost are the scores.
 // Courses lie toward −Z, where the samples drive under ↑. A run is recorded from its first step, so a record link
 // (model + run + challenge) is re-run and checked in the receiver's browser.

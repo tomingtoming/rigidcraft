@@ -3,10 +3,10 @@
 //! or calls `_BYE`, the harness does the same before that frame's physics; a key press is the Val change it makes.
 //! The script API readings are reproduced from `src/sim/simulation.ts` (`_X` = −x, `_VX`/`_VZ` local velocity along
 //! −X/+Z, `_EX` = −Euler x, `_Q*` with y and z negated).
-use snaptiles_core::model::{assemble, Quat, Vec3};
-use snaptiles_core::physics::math::{euler_yxz, from_rotation};
-use snaptiles_core::physics::{groups, BuildOptions, PhysicsOptions, World, GROUND_GROUP};
-use snaptiles_core::rc::{parse_rc, RcModel};
+use rigidcraft_core::model::{assemble, Quat, Vec3};
+use rigidcraft_core::physics::math::{euler_yxz, from_rotation};
+use rigidcraft_core::physics::{groups, BuildOptions, PhysicsOptions, World, GROUND_GROUP};
+use rigidcraft_core::rc::{parse_rc, RcModel};
 use rapier3d::prelude::ColliderBuilder;
 use std::cell::RefCell;
 use std::collections::HashMap;

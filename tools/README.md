@@ -1,4 +1,4 @@
-# tools — probes used while building SnapTiles
+# tools — probes used while building RigidCraft
 
 All browser probes expect the dev server at `http://127.0.0.1:5173/` (`bun run dev`) and use
 the Playwright Chromium with SwiftShader. Community model files are not part of this repo;

@@ -5,7 +5,7 @@
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 D=$(cd "$(dirname "$0")" && pwd); RC=$HOME/rc/RC15B26; RES=$RC/Resources
-RAW=/mnt/d/snaptiles-models/raw; OUT=/mnt/d/snaptiles-models/quarantine/original/runs/geom
+RAW=/mnt/d/rigidcraft-models/raw; OUT=/mnt/d/rigidcraft-models/quarantine/original/runs/geom
 mkdir -p "$OUT/models"
 [ -f "$RES/Basic.txt.orig" ] || cp "$RES/Basic.txt" "$RES/Basic.txt.orig"
 [ -f "$RES/System.rcs.orig" ] || cp "$RES/System.rcs" "$RES/System.rcs.orig"

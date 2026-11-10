@@ -115,7 +115,7 @@ success. Passing unit tests does not mean the original model is fully reproduced
 
 Fresh original no-input measurement: height 4.079 m at frame 1, 2.087 at frame 20,
 then about 2.1 through 240; upright dot rounds to 1.000 throughout sampled frames.
-SnapTiles default: upright dot .265 at frame 60, -.078 at frame 120. With only
+RigidCraft default: upright dot .265 at frame 60, -.078 at frame 120. With only
 `servoHold=0`, it settles near 2.14 m and upright dot 1.000 at frames 90–240.
 Under subsequent Up input, that setting keeps 2walk, 4leg2 and 4leg1 standing but
 zrobo fails. The original idle log is `.shots/s42-original-2walk-idle.csv`.

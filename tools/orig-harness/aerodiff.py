@@ -1,5 +1,5 @@
 import csv, sys, math
-# aerodiff.py <runs dir> <snap dir>: prints speed/height traces of the aero probes, original vs SnapTiles
+# aerodiff.py <runs dir> <snap dir>: prints speed/height traces of the aero probes, original vs RigidCraft
 runs, snap = sys.argv[1], sys.argv[2]
 names = ['aero_flat', 'aero_broad', 'aero_broad2', 'aero_tilt10', 'aero_tiltm10', 'aero_tilt20', 'aero_tilt45']
 def load(f):

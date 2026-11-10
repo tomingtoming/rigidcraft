@@ -3,7 +3,7 @@
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 RC=$HOME/rc/RC15B26
-OUT=/mnt/d/snaptiles-models/quarantine/original/runs/camera
+OUT=/mnt/d/rigidcraft-models/quarantine/original/runs/camera
 export DISPLAY=:99
 Xvfb :99 -screen 0 1280x800x24 >/dev/null 2>&1 &
 XPID=$!

@@ -1,6 +1,6 @@
 //! Stage 2a check (core/PORT.md): the Rust physics world against the TypeScript `PhysicsWorld`, both run on every
 //! corpus model without its script (oracle: frozen output of the removed TypeScript core, `tools/export-physics-oracle.ts` in git history; JSON in
-//! `D:/snaptiles-models/quarantine/oracle-physics`, or `SNAPTILES_PHYSICS_ORACLE`). Without the oracle the test passes
+//! `D:/rigidcraft-models/quarantine/oracle-physics`, or `RIGIDCRAFT_PHYSICS_ORACLE`). Without the oracle the test passes
 //! with a message.
 //!
 //! rapier3d 0.36 and rapier3d-compat 0.21 are not bit-identical engines, so trajectories drift apart and chaotic
@@ -8,9 +8,9 @@
 //! NaN or explosion where the TypeScript stays finite. Everything else is reported (`cargo test --release --test
 //! physics_oracle -- --nocapture`).
 use serde_json::Value;
-use snaptiles_core::model::{assemble, Vec3};
-use snaptiles_core::physics::{math::euler_yxz, BuildOptions, PhysicsOptions, World};
-use snaptiles_core::rc::parse_rc;
+use rigidcraft_core::model::{assemble, Vec3};
+use rigidcraft_core::physics::{math::euler_yxz, BuildOptions, PhysicsOptions, World};
+use rigidcraft_core::rc::parse_rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -115,7 +115,7 @@ struct Row {
 }
 
 fn oracle_dir() -> Option<PathBuf> {
-    let dir = std::env::var("SNAPTILES_PHYSICS_ORACLE").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from("D:/snaptiles-models/quarantine/oracle-physics"));
+    let dir = std::env::var("RIGIDCRAFT_PHYSICS_ORACLE").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from("D:/rigidcraft-models/quarantine/oracle-physics"));
     dir.is_dir().then_some(dir)
 }
 
@@ -153,7 +153,7 @@ fn physics_matches_the_typescript_oracle() {
         let core: Vec<Vec<f64>> = o["core"].as_array().unwrap().iter().map(|row| row.as_array().unwrap().iter().map(num).collect()).collect();
         let pos_err = |k: usize| dist([r.core[k][0], r.core[k][1], r.core[k][2]], [core[k][0], core[k][1], core[k][2]]);
         let max_over = |n: usize| (0..n.min(core.len())).map(pos_err).fold(0.0, |m: f64, d| if d.is_nan() { f64::INFINITY } else { m.max(d) });
-        if std::env::var("SNAPTILES_PHYSICS_TRACE").is_ok_and(|t| t == name) {
+        if std::env::var("RIGIDCRAFT_PHYSICS_TRACE").is_ok_and(|t| t == name) {
             for k in 0..core.len() {
                 println!("{name} frame {:>3} err {:.3e} rust {:?} ts {:?}", k + 1, pos_err(k), &r.core[k][..3], &core[k][..3]);
             }
@@ -163,7 +163,7 @@ fn physics_matches_the_typescript_oracle() {
         let drive_err = |k: usize| dist([rd.core[k][0], rd.core[k][1], rd.core[k][2]], [drive[k][0], drive[k][1], drive[k][2]]);
         let drive_max = |a: usize, b: usize| (a..b.min(drive.len())).map(drive_err).fold(0.0, |m: f64, d| if d.is_nan() { f64::INFINITY } else { m.max(d) });
         let d0 = drive_at.unwrap_or(1) - 1;
-        if std::env::var("SNAPTILES_PHYSICS_TRACE").is_ok_and(|t| t == format!("d{name}")) {
+        if std::env::var("RIGIDCRAFT_PHYSICS_TRACE").is_ok_and(|t| t == format!("d{name}")) {
             for k in 0..drive.len() {
                 println!("{name} drive frame {:>3} err {:.3e} rust {:?} ts {:?}", k + 1, drive_err(k), &rd.core[k][..3], &drive[k][..3]);
             }

@@ -73,7 +73,7 @@ export class BuildPanel {
     for (const type of TYPES) { this.type.add(new Option(withCost(type), type)); this.addType.add(new Option(withCost(type), type)); }
     this.restoreButton.onclick = () => { const draft = this.recoveryDraft; if (draft) this.edit(() => { this.document.restore(draft.text, draft.filename); this.selected = 0; }, true); };
     window.addEventListener('storage', event => {
-      if (this.active && (event.key === null || event.key === 'snaptiles.editor.draft.v1')) this.paintDraft();
+      if (this.active && (event.key === null || event.key === 'rigidcraft.editor.draft.v1')) this.paintDraft();
     });
     document.getElementById('focus-part')!.onclick = () => { if (this.assembly) this.scene.focusTile(this.selected); };
     window.addEventListener('keydown', event => {

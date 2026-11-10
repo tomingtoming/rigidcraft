@@ -16,9 +16,9 @@ model and `Resources/System.rcs` as the default scenario, so experiments replace
 - `harness_wheels.rcs` — log only: core pose/velocity/Euler plus `_WY` of up to six wheels (`rc_models19.sh`
   straight-line spin probes). Replay with `--self --wheels`.
 - `rc_launch.sh <secs>` — one run with a screenshot. `rc_batch.sh name:model:power ...` — batch
-  runs, copies `log.txt`/`geom.txt`/screenshot to `D:\snaptiles-models\quarantine\original\runs\`.
+  runs, copies `log.txt`/`geom.txt`/screenshot to `D:\rigidcraft-models\quarantine\original\runs\`.
   `HARNESS=<path>` picks the scenario. `rc_models.sh` writes the probe models.
-- Replay in SnapTiles: `cargo run --release --bin orig_compare -- <model> <out.csv> --allwheels --off=210` (in `core/`).
+- Replay in RigidCraft: `cargo run --release --bin orig_compare -- <model> <out.csv> --allwheels --off=210` (in `core/`).
 
 Results are summarised in `docs/measured.md`.
 
@@ -26,4 +26,4 @@ For the static-angle binding diagnostic, `standing-angle-variable.rcd` and
 `standing-angle-literal.rcd` are an 18-tile generated fixture pair. Run either with
 `harness_idle.rcs` through `run_probe.sh` (log name `idle.csv`). Their original
 240-frame traces were identical; `standing-angle-original.csv` stores the shared
-result. See `docs/sprints-45-47.md` for provenance and SnapTiles replay commands.
+result. See `docs/sprints-45-47.md` for provenance and RigidCraft replay commands.

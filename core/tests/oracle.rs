@@ -1,9 +1,9 @@
 //! Stage 1 acceptance (core/PORT.md): the Rust parser and assembler against the TypeScript oracle written by
 //! `bun tools/export-oracle.ts`. Counts, names and strings must match exactly, numbers within 1e-9.
-//! Set `SNAPTILES_ORACLE` to use another directory; without one the test passes with a message.
+//! Set `RIGIDCRAFT_ORACLE` to use another directory; without one the test passes with a message.
 use serde_json::Value;
-use snaptiles_core::model::{assemble, assembly_bottom, Vec3};
-use snaptiles_core::rc::{count_nodes, parse_rc, ChipNode, ScriptLang};
+use rigidcraft_core::model::{assemble, assembly_bottom, Vec3};
+use rigidcraft_core::rc::{count_nodes, parse_rc, ChipNode, ScriptLang};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -198,7 +198,7 @@ fn compare(o: &Value, c: &mut Cmp) -> (bool, bool) {
 
 #[test]
 fn parse_and_assemble_match_the_typescript_oracle() {
-    let dir = PathBuf::from(std::env::var("SNAPTILES_ORACLE").unwrap_or_else(|_| "D:/snaptiles-models/quarantine/oracle".into()));
+    let dir = PathBuf::from(std::env::var("RIGIDCRAFT_ORACLE").unwrap_or_else(|_| "D:/rigidcraft-models/quarantine/oracle".into()));
     let Ok(entries) = std::fs::read_dir(&dir) else {
         println!("oracle: no directory {} — skipped (run `bun tools/export-oracle.ts`)", dir.display());
         return;

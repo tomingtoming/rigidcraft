@@ -1,5 +1,5 @@
 {
-  "name": "snaptiles",
+  "name": "rigidcraft",
   "private": true,
   "version": "0.0.0",
   "license": "AGPL-3.0-or-later",
@@ -17,8 +17,8 @@
     "test:editor": "node tools/editor-ci.mjs",
     "test:editor:firefox": "node tools/editor-ci.mjs editor-firefox-probe.mjs",
     "test:editor:webkit": "node tools/editor-ci.mjs editor-webkit-probe.mjs",
-    "probe:corpus": "node tools/corpus.mjs http://127.0.0.1:5173/ ../snaptiles-models/raw/sprishri/x ../snaptiles-models/raw/RCModel1",
-    "probe:drive": "node tools/drive-probe.mjs ArrowUp:4000 ../snaptiles-models/raw/sprishri/x/ride/car1.txt ../snaptiles-models/raw/sprishri/x/ride/3wheel.txt ../snaptiles-models/raw/sprishri/x/ride/bike1.rcd ../snaptiles-models/raw/sprishri/x/ride/segway.txt ../snaptiles-models/raw/RCModel1/bike.rcd"
+    "probe:corpus": "node tools/corpus.mjs http://127.0.0.1:5173/ ../rigidcraft-models/raw/sprishri/x ../rigidcraft-models/raw/RCModel1",
+    "probe:drive": "node tools/drive-probe.mjs ArrowUp:4000 ../rigidcraft-models/raw/sprishri/x/ride/car1.txt ../rigidcraft-models/raw/sprishri/x/ride/3wheel.txt ../rigidcraft-models/raw/sprishri/x/ride/bike1.rcd ../rigidcraft-models/raw/sprishri/x/ride/segway.txt ../rigidcraft-models/raw/RCModel1/bike.rcd"
   },
   "dependencies": {
     "three": "^0.186.1"
