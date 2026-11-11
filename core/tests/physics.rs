@@ -192,7 +192,7 @@ fn loaded_wheel_fold_reaches_30_degrees_within_a_frame_and_holds() {
 
 // ------------------------------------------------------------------------------------------------------ kerb.test.ts
 
-// The original's default Basic car driving itself at Engine 2500 (tools/orig-harness/basic_drive_2500.txt).
+// The original's default car restated with Engine held at 2500 (the same text as tools/orig-harness/basic_car_drive.txt).
 const BASIC: &str = "Val {
   Brake(default=0,min=0,max=80,step=80)
   HBrake(default=0,min=0,max=100,step=100)

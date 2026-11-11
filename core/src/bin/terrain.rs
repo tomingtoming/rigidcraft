@@ -6,7 +6,7 @@
 //! Scenes come from `tools/orig-harness/terrains.json` (`rc_terrain.sh` on the original): the scene's ground replaces
 //! the default one, boxes are cuboids and ramps one convex wedge each (slope and plateau, so the crest has no seam).
 //! `step` is `rc_step.sh`: the default ground plus a box `h` m tall spanning x −10..10, z 6..36. The model drives itself
-//! by its Val defaults (default `tools/orig-harness/basic_drive_2500.txt`). Columns match `harness_step.rcs`: core
+//! by its Val defaults (default `tools/orig-harness/basic_car_drive.txt`). Columns match `harness_step.rcs`: core
 //! pose, velocity, Euler, then y, z and `_WY` of the first four Wheel/RLW chips. Paths are relative to the repository.
 use rapier3d::geometry::ColliderBuilder;
 use rapier3d::math::Vector;
@@ -64,7 +64,7 @@ fn main() {
         eprintln!("usage: terrain <scene|all|step> <out> [--model=…] [--frames=450] [--h=0.10]");
         std::process::exit(2);
     }
-    let model = fs::read_to_string(repo(&opt("model").unwrap_or("tools/orig-harness/basic_drive_2500.txt".into()))).expect("model");
+    let model = fs::read_to_string(repo(&opt("model").unwrap_or("tools/orig-harness/basic_car_drive.txt".into()))).expect("model");
     let frames: usize = opt("frames").map(|f| f.parse().unwrap()).unwrap_or(450);
     if pos[0] == "step" {
         let h: f64 = opt("h").map(|f| f.parse().unwrap()).unwrap_or(0.1);

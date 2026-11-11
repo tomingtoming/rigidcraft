@@ -1,0 +1,14 @@
+// The four-wheel car the kerb and terrain probes drive: the same Val limits, layout and wheel bindings as the car
+// the original starts with, written out here with Engine held at 2500 (no keys, no script). core/src/bin/terrain.rs
+// loads it by default; rc_step_control.sh makes the original's counterpart from the installed game at run time.
+Val {
+  Brake(default=0,min=0,max=80,step=80)
+  HBrake(default=0,min=0,max=100,step=100)
+  Handle(default=0,min=-20,max=20,step=5)
+  Engine(default=2500,min=-2500,max=2500,step=0)
+}
+Key { }
+Body { Core(){
+  N:Chip(){ N:Rudder(angle=Handle){ W:Frame(){ W:Wheel(angle=90,brake=Brake){} } E:Frame(){ E:Wheel(angle=90,brake=Brake){} } } }
+  S:Chip(){ W:Frame(){ W:Wheel(angle=90,power=Engine,brake=HBrake){} } E:Frame(){ E:Wheel(angle=90,power=-Engine,brake=HBrake){} } }
+} }
