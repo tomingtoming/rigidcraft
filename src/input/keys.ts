@@ -1,5 +1,5 @@
 // Key numbers used by the Key section of .rc files, mapped to keyboard events.
-// The numbering is the measured one (docs/measured.md); the table in docs/spec/rc-format.md is the older, unverified reading.
+// The numbering is the measured one (docs/measured.md, repeated in docs/spec/rc-format.md);
 // keep this table the single source of truth.
 
 export interface KeyDef {

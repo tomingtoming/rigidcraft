@@ -1,5 +1,8 @@
 # RigidChips .rc モデルファイル書式 (clean-room 仕様メモ)
 
+> **2026-10-27 時点の公開資料からの読み。** その後の実測で覆った点（Arm の充填量、燃料容量、Jet/Cowl の option、車輪半径、`_DT()` など）は
+> [docs/measured.md](../measured.md) と実装が正。キー番号の表と例だけは 2026-11-11 に実測値へ直した。
+
 ## Sources (fetched 2026-10-27; ドキュメント/解説のみ。C++ソースは未参照)
 - https://wikiwiki.jp/rigidchips/ (FrontPage 構成確認)
 - https://wikiwiki.jp/rigidchips/モデル書式簡易リファレンス (v1.5B系, 2018-06-13更新)
@@ -47,10 +50,10 @@ keynumber:VARNAME(step=N)[, VARNAME2(step=M) ...]
 
 | # | キー | # | キー |
 |---|---|---|---|
-| 0 | ← ⚠(原文が化け。ksnk.jpは左上右下の順に読める) | 9 | D |
-| 1 | ↑ ⚠ | 10 | V |
-| 2 | → ⚠ | 11 | B |
-| 3 | ↓ ⚠ | 12 | F |
+| 0 | ↑ (実測。原文は化けていて、当初は ←↑→↓ の順と読んでいた) | 9 | D |
+| 1 | ↓ | 10 | V |
+| 2 | ← | 11 | B |
+| 3 | → | 12 | F |
 | 4 | Z | 13 | G |
 | 5 | X | 14 | Q |
 | 6 | C | 15 | W |
@@ -146,10 +149,10 @@ Val{
   TORQUE(default=0, min=-500, max=500, step=10)
 }
 Key{
-  0:STEER(step=-6)      // 左 (⚠0番が左か未確認)
-  2:STEER(step=6)       // 右
-  1:TORQUE(step=30)     // 前進
-  3:TORQUE(step=-30)    // 後退
+  2:STEER(step=-6)      // 左
+  3:STEER(step=6)       // 右
+  0:TORQUE(step=30)     // 前進
+  1:TORQUE(step=-30)    // 後退
 }
 Body{
   Core(color=#2060FF){
@@ -178,10 +181,10 @@ Val{
 Key{
   7:THR(step=10)
   8:THR(step=-10)
-  1:ELEV(step=-4)
-  3:ELEV(step=4)
-  0:AIL(step=-4)
-  2:AIL(step=4)
+  0:ELEV(step=-4)
+  1:ELEV(step=4)
+  2:AIL(step=-4)
+  3:AIL(step=4)
 }
 Body{
   Core(color=#FFFFFF){

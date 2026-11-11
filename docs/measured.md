@@ -1,4 +1,25 @@
-# What was measured, what is still a guess (2026-10-27, evening)
+# What was measured, what is still a guess (started 2026-10-27, evening; sections are dated)
+
+> **Reading guide (added 2026-11-11).** This file is a dated log: earlier sections are left as written. Where a later
+> section replaced a number, the later one is in force:
+> - Jet thrust 0.145 N per power (first table) → **1/6** ("difference hunt, tier 3").
+> - "joint stiffness: rigid" and "Spring joints are welded" → spring joints are torsion springs (tier 3).
+> - plate aero high-angle term 9.3·sin⁸ → **0.3·sin⁸** ("Airborne plate incidence", 2026-11-09).
+> - sustained tyre load cap 1.5× → **3×**; the power-scaled fade now also applies to rolling wheels (tier 3).
+> - "Implemented from these": `SOLVER_ITERATIONS` 16 → **1 substep with `PGS_ITERATIONS` 48** (tier 3).
+> - "Rapier caps angular velocity" says the wheel does not spin up in the air; the first table's "wheel in the air"
+>   row (measured later the same week) says it does, and that is what is implemented.
+> - Wheel inertia: this file says 0.35 × ½mr², the code uses `WHEEL_INERTIA_SCALE` 0.5 (commit of 2026-10-28,
+>   "wheel inertia 0.5") and its old comment said 0.7. The source of the 0.35 is not recorded.
+> - Camera: the 2026-10-30 section ends with "none of the above is implemented yet"; views A–J were implemented the
+>   same day (docs/editor-sprints.md, Sprint 70).
+> - "RigidCraft has no scenario layer": `_ADDBALL`, `_SETOBJFIX`, `_SETOBJCOLOR`, `_SETWIND`/`_GETWIND` exist now.
+> - `world.ts`, `simulation.ts`, `driveWheel()`, `servoTeleport()`, `kerbSprings()`, `measureTyreLoads()`: the TypeScript
+>   core was removed on 2026-11-02. The same code is `core/src/physics/{wheel,servo,world}.rs` (`drive_wheel`,
+>   `servo_teleport`, `kerb_springs`, `measure_tyre_loads`), on rapier3d 0.36.
+> - `tools/*-compare.ts`, `joint-score.ts`, `rim-probe.ts`, `servo-cause-probe.ts`, `tests/calibration.test.ts` and
+>   `tests/kerb.test.ts` are gone: use `cargo run --release --features tools --bin terrain` / `--bin replay` /
+>   `--bin orig_compare` in `core/`, and `core/tests/physics.rs`.
 
 The public docs (`docs/spec/`) leave out most sign conventions and constants. Since the evening of
 2026-10-27 the original **RigidChips 1.5B26** (the author's final release, 2006-08-03) runs in a
@@ -248,7 +269,8 @@ mouse input works in other views, and the vertical lag of A (height over bumps v
 
 Probe: `tools/orig-harness/rc_step.sh` swaps `Resources/Land.x` for a generated land
 (`make_step_land.py`: 4 m ground cells at y = 50, a box h m tall over x −10…10, z 6…36) and drives the
-default Basic car with Val Engine 2500 (`basic_drive_2500.txt`) into it; `harness_step.rcs` logs core
+default Basic car with Val Engine 2500 (`basic_drive_2500.txt`, made from the installed game at run time; the
+repository's own restatement of that car is `tools/orig-harness/basic_car_drive.txt`) into it; `harness_step.rcs` logs core
 and wheel heights. RigidCraft replays the same with `bun tools/step-compare.ts`; `stepdiff.py` compares.
 Land notes: the 4th material row (Emissive) is the original's rolling/static/dynamic friction (readme
 15B11): an Emissive of 0.2 held the car to 0.5 m/s. Tyre radius 0.30 m; impact at 6.6–6.9 m/s.

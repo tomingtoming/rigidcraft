@@ -121,7 +121,7 @@ unproven; the earlier blanket “no momentum” interpretation is superseded.
 
 ### Production verification
 
-Deployed 2026-10-29 to the existing rigidcraft Worker/custom domain.
+Deployed 2026-10-29 to the existing Worker/custom domain (then named `snaptiles`; renamed 2026-11-10).
 Version: `56bfc376-5e9a-4341-bfa0-a80e45ccf9e0`.
 Bundle: `/assets/index-DtXWpyea.js` (5,066,795 bytes).
 SHA-256: `292a55f92355115f99b7d5cfff77f0a51546f8d2c136ffa94c83b423fa328785`.

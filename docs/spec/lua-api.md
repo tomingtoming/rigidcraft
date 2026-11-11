@@ -1,5 +1,8 @@
 # RigidChips Script / Lua API 仕様メモ (clean-room)
 
+> **2026-10-27 時点の公開資料からの読み。** その後の実測で覆った点（Arm の充填量、燃料容量、Jet/Cowl の option、車輪半径、`_DT()` など）は
+> [docs/measured.md](../measured.md) と実装が正。キー番号の表と例だけは 2026-11-11 に実測値へ直した。
+
 ## Sources (fetched 2026-10-27; ドキュメントのみ。C++ソースは未参照)
 - https://wikiwiki.jp/rigidchips/RC関数リファレンス
 - https://wikiwiki.jp/rigidchips/モデル書式簡易リファレンス
@@ -123,13 +126,13 @@ Val{
   STEER(default=0, min=-30, max=30, step=3)
   TORQUE(default=0, min=-500, max=500)
 }
-Key{ 0:STEER(step=-6), 2:STEER(step=6) }
+Key{ 2:STEER(step=-6), 3:STEER(step=6) }
 Body{ Core(){ N:Wheel(power=TORQUE, name=W0){ } } }
 Lua{
   function OnFrame()
     local v = math.sqrt(_VX(0)^2 + _VY(0)^2 + _VZ(0)^2)  -- m/s
     out(0, "kmh=", v*3.6)
-    if _KEY(1) == 1 then TORQUE = 400 else TORQUE = 0 end
+    if _KEY(0) == 1 then TORQUE = 400 else TORQUE = 0 end
   end
 }
 ```
