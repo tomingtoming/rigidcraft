@@ -111,11 +111,19 @@ const luaApply = document.createElement('button');
 luaApply.id = 'lua-apply';
 luaApply.type = 'button';
 luaApply.hidden = true;
-luaApply.textContent = 'Luaを反映（続けたまま）';
-luaApply.title = '実行を止めずに、Luaの部分だけ差し替えます（Ctrl+Shift+Enter）。機体・Val・Keyを変えたときは▶で実行し直します';
+const LUA_APPLY = 'Luaを反映（続けたまま）', LUA_APPLY_PAUSED = '続行してLuaを反映';
+luaApply.textContent = LUA_APPLY;
+luaApply.title = '実行を止めずに、Luaの部分だけ差し替えます（Ctrl+Shift+Enter）。ブレークポイントで止まっているときは、そのフレームを今のLuaで最後まで進めてから差し替えます。機体・Val・Keyを変えたときは▶で実行し直します';
 sourceView.layer.append(luaApply);
 const applyLua = () => {
   if (!sim || builder?.active) return;
+  if (sim.midFrame) {
+    // Paused at a breakpoint: the frame under way ends with the Lua it started with, then the new block takes over.
+    // A block that does not compile is refused first, so the pause is kept.
+    if (liveError) { statusEl.textContent = liveError.message; return; }
+    debug.finishFrame();
+    if (sim.midFrame) return;
+  }
   const err = sim.reloadScript(sourceEl.value);
   statusEl.textContent = err ?? '';
   if (err) return;
@@ -518,6 +526,8 @@ function frame(now: number): void {
   if (!builder?.active) { debug.update(sim); challenge.update(sim); }
   // the live-edit button: running, and the source differs from the running Lua's
   luaApply.hidden = !sim || !!builder?.active || !sim.model.script || sourceEl.value === sim.currentSource;
+  const applyLabel = sim?.midFrame ? LUA_APPLY_PAUSED : LUA_APPLY;
+  if (luaApply.textContent !== applyLabel) luaApply.textContent = applyLabel;
   challenge.updateBuild(builder?.assembly ?? null, !!builder?.active);
   scene.render();
 }

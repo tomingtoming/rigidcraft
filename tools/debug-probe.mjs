@@ -35,7 +35,6 @@ try {
  const f0=await page.evaluate(()=>window.__sim.frame);
  await page.click('#debug-forward');
  assert.equal(await page.evaluate(()=>window.__sim.frame),f0+1);
- const count=async()=>page.evaluate(()=>[...document.querySelectorAll('.watch-row')].find(r=>r.querySelector('.watch-name').textContent==='count').querySelector('.watch-value').textContent);
  await page.waitForFunction(f=>[...document.querySelectorAll('.watch-row')].find(r=>r.querySelector('.watch-name').textContent==='count')?.querySelector('.watch-value').textContent===String(f),f0+1);
  // rewind to frame 40 with the timeline: the same position as the first pass, count 40
  await page.$eval('#debug-timeline',el=>{el.value='40';el.dispatchEvent(new Event('input'));el.dispatchEvent(new Event('change'));});
@@ -68,6 +67,17 @@ try {
  await page.waitForTimeout(300);
  assert.equal(await page.evaluate(()=>window.__sim.frame),stopped,'paused at the breakpoint');
  await page.screenshot({path:new URL('../.shots/debug-panel.png',import.meta.url).pathname.replace(/^\/([A-Z]:)/,'$1')});
+ // applying an edited Lua block while paused: the button says so, the paused frame ends once with the old block
+ // (count goes up by one, not two), and the new block runs from the next frame
+ const pausedCount=await page.evaluate(()=>Number(window.__sim.luaWatch().find(([n])=>n==='count')[1]));
+ await page.fill('#source',MODEL.replace('out(0, "count "','out(0, "edited "'));
+ await page.waitForFunction(()=>document.getElementById('lua-apply').textContent==='続行してLuaを反映'&&!document.getElementById('lua-apply').hidden);
+ await page.click('#lua-apply');
+ assert.equal(await page.evaluate(()=>window.__sim.midFrame),false);
+ assert.equal(await page.evaluate(()=>window.__sim.frame),stopped+1);
+ assert.equal(await page.evaluate(()=>Number(window.__sim.luaWatch().find(([n])=>n==='count')[1])),pausedCount);
+ assert.equal(await page.evaluate(()=>window.__sim.currentSource.includes('edited ')),true);
+ await page.waitForFunction(()=>document.getElementById('lua-apply').hidden);
  // removing it lets the run go on
  await page.click('#debug-bp-list .bp'); await page.click('#debug-play');
  await page.waitForFunction(f=>window.__sim.frame>f+10,stopped);
