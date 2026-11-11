@@ -771,7 +771,8 @@ Validation: 98 unit/integration tests and typecheck/build pass. Application code
 and built JS hash (index-BVfEZGL2.js) are unchanged from Sprint 31, whose 20 browser
 probes passed; this documentation/test-only sprint does not repeat that suite.
 Read-only GitHub check on 2026-10-30: PR 1 remains OPEN at 1f3f884f0f12a659e6c58d49da3a8b5166f034b3
-(https://github.com/tomingtoming/rigidcraft/pull/1). Editor work through local
+(pull request 1 of the repository as it was then; that repository was replaced on 2026-11-11 and the pull request
+went with it). Editor work through local
 02d92c4 is not that remote head. No push or deployment was performed.
 
 Retrospective: input plumbing and a changing control value are weaker evidence
