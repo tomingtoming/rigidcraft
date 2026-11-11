@@ -13,8 +13,7 @@ jobs:
       - run: cargo test --release --features tools
         working-directory: core
   test:
-    # pinned: on the 26.04 image behind ubuntu-latest, apt could not resolve the Ubuntu mirrors for the browsers' packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
