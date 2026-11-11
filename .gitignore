@@ -4,6 +4,7 @@ dist/
 *.log
 .DS_Store
 .shots/
+.wrangler/
 .dev.log
 .dev.pid
 tools/orig-harness/lands/

@@ -39,21 +39,6 @@ export const FOLD_SIGN: Record<'N' | 'S' | 'E' | 'W', number> = { N: 1, S: 1, E:
  */
 export const JOINT_SIGN = { TRIM: 1, RUDDER: -1, WHEEL: 1 };
 
-/** sign between an `angle` attribute and the joint's right-handed rotation about its axis */
-export function jointSign(kind: JointKind, dir: 'N' | 'S' | 'E' | 'W' | null): number {
-  switch (kind) {
-    case 'hinge':
-    case 'fixed':
-      return FOLD_SIGN[dir ?? 'N'];
-    case 'roll':
-      return JOINT_SIGN.TRIM;
-    case 'yaw':
-      return JOINT_SIGN.RUDDER;
-    case 'wheel':
-      return JOINT_SIGN.WHEEL;
-  }
-}
-
 export interface TypeSpec {
   joint: JointKind;
   collides: boolean;
@@ -97,7 +82,6 @@ export const DIR_VEC: Record<'N' | 'S' | 'E' | 'W', THREE.Vector3> = {
   E: new THREE.Vector3(1, 0, 0),
   W: new THREE.Vector3(-1, 0, 0),
 };
-export const DIR_CODE: Record<'N' | 'S' | 'E' | 'W', number> = { S: 0, W: 1, N: 2, E: 3 };
 
 export interface TileInstance {
   id: number; // index in assembly.tiles
@@ -290,16 +274,6 @@ export function assemble(model: RcModel, env: ValEnv): Assembly | null {
   return { tiles, roots, byChip, chipCount: chipIndex };
 }
 
-/** Recompute a tile's world-frame joint anchors/axes from its parent's current pose. */
-export function refreshJointFrames(t: TileInstance): void {
-  if (!t.parent || !t.local) return;
-  const p = t.parent;
-  t.anchor.copy(t.local.anchor).applyQuaternion(p.quaternion).add(p.position);
-  t.axis.copy(t.local.axis).applyQuaternion(p.quaternion);
-  t.rimAnchor.copy(t.local.rimAnchor).applyQuaternion(p.quaternion).add(p.position);
-  t.rimAxis.copy(t.local.rimAxis).applyQuaternion(p.quaternion);
-  t.dirAxis.copy(t.local.dirAxis).applyQuaternion(p.quaternion);
-}
 
 /** Lowest point of the assembly (model frame), used to drop it onto the ground. */
 export function assemblyBottom(a: Assembly): number {

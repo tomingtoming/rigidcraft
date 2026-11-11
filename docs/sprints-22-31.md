@@ -55,7 +55,7 @@ one horizontal family of probes is insufficient to infer a general 3D spawn rule
 
 Disabling head control, then all power, still allowed 4leg2 to fall. Freezing the entire script left
 the static assembly upright (min up 0.902); moving the legs is involved. Original settled leg angles
-match RigidCraft' commands (e.g. -135, -12.42336, -64.93722, 12.63942 degrees); this is not merely
+match RigidCraft's commands (e.g. -135, -12.42336, -64.93722, 12.63942 degrees); this is not merely
 an inverse-kinematics angle mismatch. Increasing solver iterations 64→256 did not resolve it.
 Replacing passive zero-limit revolutes with fixed joints did not resolve it and made car1 excessively
 fast (115.6 m/s peak). Rebuilding at settled leg commands did not resolve it. All rejected.

@@ -38,7 +38,7 @@ columns. Raw logs: `D:\rigidcraft-models\quarantine\original\runs\*.csv` (not in
 | Jet | thrust **0.145 N per power unit along +normal** (≈ power/6.9): a 530 kg wheeled car with a stand-up jet at power 10000 accelerates at a constant 2.74 m/s² over 6 s, at 5000 at 1.38 m/s², same for wheel option 0 and 2. (The 3-wheeler's script assumes power/6 to hover; the plane sample's ground run was too noisy to pin it) | rolle_* runs, plane_full |
 | attribute evaluation | a literal `power=5000` on a Jet produced no thrust; `power=Engine` with a Val default did. Attributes bound to a Val are re-evaluated every frame (so `_SET` on them is lost) | jetc_* vs jet_*_val runs |
 | servo | a commanded joint angle is applied **within one frame** (Rudder: 60° one frame after the Val changes), **without momentum**: snapping a Frame holding two Weights 45° pitches the light core 31° and the arm −14° (inertia-weighted split about the hinge), the load then swings from rest and the model settles with the core at 45° | servo_rudder, servo_hinge_load |
-| servo with a planted foot | a 277 kg body on two 1.2 m legs, the S hip stepped 90°→60° (foot would swing up/out): one frame later the leg has swung ~24° and the body side ~6° — the **pure inverse-inertia split, no hold for the grounded foot** — and the uncommanded N leg has swung ~20° outward with its foot lifted 0.27 m, returning within 10 frames; the stance ends 6 cm lower with both legs splayed. Stepped 60°→90° (foot driven into the ground): the body rises 0.17 m in a frame, the other foot lifts briefly, then settles 6 cm higher. So the original's joints are compliant in the transient (they flex and recover), which rapier's welded joints cannot reproduce; RigidCraft' grounded-side hold is not what the original does | leg_lift / leg_push / leg_swing (`harness_servo2.rcs`, chips 0–9 logged) |
+| servo with a planted foot | a 277 kg body on two 1.2 m legs, the S hip stepped 90°→60° (foot would swing up/out): one frame later the leg has swung ~24° and the body side ~6° — the **pure inverse-inertia split, no hold for the grounded foot** — and the uncommanded N leg has swung ~20° outward with its foot lifted 0.27 m, returning within 10 frames; the stance ends 6 cm lower with both legs splayed. Stepped 60°→90° (foot driven into the ground): the body rises 0.17 m in a frame, the other foot lifts briefly, then settles 6 cm higher. So the original's joints are compliant in the transient (they flex and recover), which rapier's welded joints cannot reproduce; RigidCraft's grounded-side hold is not what the original does | leg_lift / leg_push / leg_swing (`harness_servo2.rcs`, chips 0–9 logged) |
 | joint stiffness | rigid: a Frame(spring=0.5) holding a 4× Weight at 1.2 m does not sag; spring=0.1 sags 0.1° | sag_arm, sag_arm_spring05/01 |
 | plate aero | drag per chip / v² from a jet-pushed **rolling** car (no sliding contact): **0.22 at 15°, 1.2 at 30°, 2.85 at 45°, ≈4 at 50°**, constant over 5–19 m/s (∝ v²). At 60–90° the original's car stalls near 1–3 m/s and oscillates (coefficient jumps 7 → 27 → 400 between 5 and 6 m/s: not a v² law, the readme's "steep rise toward 90°"). Normal force per chip ≈ v²·(6.7·sin^1.5 α + 9.3·sin^8 α) reproduces 0–45° within the mass offset; flat plates feel nothing to 40 m/s; a flat 3-plate sled lifts off at ≈40 m/s with 9–18° of pitch | rollb_* (0/15/30/45/50/60/75/90), sled_*, aero_* |
 | drive limit | per wheel **1.1 × its dynamic (contact) load**: the Basic-layout car (468 kg, two powered wheels) saturates at 4.4 m/s² at power 5000 and 4.2 at 10000 (≈1030 N per wheel). Its powered axle is the S one and `+Engine` drives it toward S, so that axle **leads** and unloads to ~990 N under acceleration (rapier contact impulses) — 1030/990 ≈ 1.05. The 871 kg version (four Weights) is not saturated at 5000 (4.0 m/s², fade-limited); the corpus bike (RCModel1, power 5000 on a 0.45 m rear wheel) accelerates like the original (14.4 m/s at 3 s, 22.5 at 5 s) only with the load transfer, with a static share it saturates and falls. The earlier 4-wheel "1.1 g" was mostly drive fade | turn_a10_p5000/p10000, heavy4_a10_p5000, bike_e5000, basic_nopower_p5000 |
@@ -58,7 +58,7 @@ columns. Raw logs: `D:\rigidcraft-models\quarantine\original\runs\*.csv` (not in
 | Cowl shapes | option 0 plate, **1 outline** (edges only, open inside), **2 disc** inscribed in the tile, 3/4 right triangles (apex NE / NW), **5 tombstone** (attached half square, far half a semicircle, flat), 6/7 plates | cowl_0…7.png, cowl_montage.png |
 | car1 / 3wheel at speed | on the original, Up held: the corpus car1 (670 kg, four 0.3 m wheels) accelerates at a constant 13.5 m/s² from 8 to 54.6 m/s and is then thrown 30 m into the air within 15 frames (something far down the original's world; the 3-wheeler likewise at 20 m/s after 20 s) — not aero lift. RigidCraft car1 reached 180 m/s by frame 300 because its two Trim plates (sinα 0.18) pressed it down with 8 kN at 90 m/s and the dynamic load bought grip; with the sustained grip load capped at 1.5× the static share it reaches 38 m/s (the original 54). Joint handedness (Trim roll, Rudder yaw, Chip fold) was re-measured with child chips and matches RigidCraft exactly | drive_car1, drive_3wheel, sign_trim/rudder/trimE/chip |
 | small-angle plate aero | tail plates at 5/8/10/−10/15° on the rolling car: speed deficit after 10 s 0.14/0.38/0.66/0.51/1.57 m/s → drag/v² ≈ 0.020/0.053/0.092/0.071/0.22 per chip, within 20% of the sin^1.5 law (0.015/0.048/0.084) | rollb_5/8/10/m10 |
-| rolling fade at high power | the sliding-wheel ω0 = power/20.6 is not applied to rolling wheels: a rolling wheel fades to zero push at 180 rad/s whatever the power (car1 on the original stops near 54 m/s = 180 rad/s on 0.3 m wheels); without this cap RigidCraft' car1 ran away to 400 m/s and fell through the ground | drive_car1, spin runs |
+| rolling fade at high power | the sliding-wheel ω0 = power/20.6 is not applied to rolling wheels: a rolling wheel fades to zero push at 180 rad/s whatever the power (car1 on the original stops near 54 m/s = 180 rad/s on 0.3 m wheels); without this cap RigidCraft's car1 ran away to 400 m/s and fell through the ground | drive_car1, spin runs |
 | axes | W is **+x**, N is −z, y up in the original (RigidCraft keeps W = −x internally and mirrors the x of `_X/_GX/_VX` and the axis vectors in the Lua API; the Euler and angular-velocity readouts are matched numerically, not by mirroring) | rest dumps, turn runs |
 | Trim / Rudder signs | consistent with `JOINT_SIGN` (+1 / −1) | trimrudder30 positions |
 | arrow keys | 0 ↑ 1 ↓ 2 ← 3 → (then Z X C A S D V B F G Q W E) | bike (0 engine, 1 brake), tonbo, zrobo |
@@ -259,7 +259,7 @@ Land notes: the 4th material row (Emissive) is the original's rolling/static/dyn
 | 0.20 m | speed −60%, pitch ≤ 0.40 rad, past after 0.8 s | stalls (−99%), pitch 0.92 rad, past after 4.7 s |
 | 0.25 m | speed −79%, pitch ≤ 0.53 rad, past after 1.1 s | bounced back at −3 m/s and never climbs (15 s) |
 
-The original's wheel rolls up a kerb lower than its radius with a moderate speed loss. RigidCraft' tyre (a
+The original's wheel rolls up a kerb lower than its radius with a moderate speed loss. RigidCraft's tyre (a
 frictionless load sphere plus ray grip) takes the edge as a stiff collision: an upward/backward kick
 instead of a climb. Raw logs: `D:\rigidcraft-models\quarantine\original\runs\step\`.
 
@@ -296,9 +296,9 @@ itself: the drop and ramp at a 50 m base prompted reruns at 150 m. The later Cor
 **Tier 2, corpus geometry** (`rc_geom_corpus.sh` dumps every chip at frames 1 and 30 for 97 corpus models;
 `tools/geom-compare.ts`, `geomrank.py`): the assembled poses agree for almost all models (frame-1 error
 ≤ 0.01 m). The original numbers each Wheel/RLW as two chips (a type-3 rim, then the tyre); RigidCraft leaves
-that index free, so chip numbers agree, only the rim chip itself is absent from RigidCraft' list. Frame-1
+that index free, so chip numbers agree, only the rim chip itself is absent from RigidCraft's list. Frame-1
 outliers are models whose scripts set joint angles on the first frame (mukade's leg IK runs before the
-original's first dump but after RigidCraft') and a few still unexplained (dragon wing tips 1.05 m, Talon,
+original's first dump but after RigidCraft's) and a few still unexplained (dragon wing tips 1.05 m, Talon,
 boidbit, ender, DUCKER ≤ 0.3 m). Frame-30 differences up to 27 m (satellite, Vic viper, qb-xt, ender,
 prin) come from what the models do in their first second and belong to tier 3 (driving runs).
 
@@ -351,7 +351,7 @@ that spring, wrapping the error the short way round (G.txt's legs command "curre
 Corpus: runs scoring above 1 30 (was 33), median 0.43 → 0.40; carrot, pla3 and trimpla no longer creep
 8–20 m while the original stands still; G now walks but in another direction than the original (0.39 → 0.77).
 Upright mismatches unchanged (18). Talon still falls: the original's joints also give under the landing
-(the body sinks 0.18 m and settles), RigidCraft' joints are rigid against external load and the model
+(the body sinks 0.18 m and settles), RigidCraft's joints are rigid against external load and the model
 rebounds. Making spring joints compliant to load is the next structural step; still falling also DUCKER,
 zrobo, 2leg1, 15cpHeri, been3.
 
@@ -376,7 +376,7 @@ Chips, five, nine and 25 Weights (25–2500 kg) all rest at −0.003…−0.005 
 ground is not a soft penalty contact (rapier's `contact_natural_frequency` has no effect in this build either).
 Tents of two plates hinged down 30°/60° (Chip, Frame and Arm alike) rest exactly where a **zero-thickness**
 0.6 m plate would (60°: 0.5198 m above the flat core on the default land, geometry 0.5196; two chips deep
-1.0378, geometry 1.0392). RigidCraft' plates collide with the 0.03 m thickness, so its models stand ~2 cm higher
+1.0378, geometry 1.0392). RigidCraft's plates collide with the 0.03 m thickness, so its models stand ~2 cm higher
 (median over 85 upright corpus runs); a thin collider (knob `plateT`) leaves the corpus scores unchanged
 (median 0.33 → 0.32, mismatches 12), so the default stays. Talon without its Lua now matches the original's
 settled pose within 0.10 m; with the Lua (legs moving during the spawn drop) it is 0.47 m off and still falls
@@ -408,14 +408,14 @@ rest of the model (2leg1's and 4leg2's "head wheel" axles) stays rigid. 15cpHeri
   jet-pushed wheeled car.
 - **`_AZ` is a tilt, not an Euler roll** (`rc_models38.sh`, `harness_axes2.rcs`): an upside-down chip reads
   `_AZ` ≈ 0 (Euler roll ±π) and one turned over about its forward axis reads the roll negated; `_AX` = asin(−Lz·up)
-  already was. RigidCraft' `_AZ` is now asin(Lx·up). tp-2 steers by a flipped body chip: with the Euler roll its
+  already was. RigidCraft's `_AZ` is now asin(Lx·up). tp-2 steers by a flipped body chip: with the Euler roll its
   hover controller saturated every jet at ±100000; now it flies (Up 0.42 → 0.15) and hovers (idle 2.63 → 0.86,
   though it climbs 0.13 m/s where the original holds 3.0 m).
 - **Rotor spin integration** is sub-stepped and stops at the drag/motor balance (a rotor that touched the ground at
   speed diverged to NaN in 15cpHeri under Up).
 
 1wheel was not a sign error: the original yaws ~160° while idle, which flips its Euler pitch; it then rides at
-7.5 m/s against RigidCraft' 5.8. RCModel1's bike stops in the original after 4.7 m/s, nose up 0.25 rad, with Up held
+7.5 m/s against RigidCraft's 5.8. RCModel1's bike stops in the original after 4.7 m/s, nose up 0.25 rad, with Up held
 (about 2.8 kN of extra resistance): most likely its two side stands, lowered below 5 m/s by its Lua, dragging on
 their edges — the friction of a plate's edge on the ground is not measured (Frame faces slide at 0.1). Open.
 Corpus: runs scoring above 1 25 → 21, median 0.33 → 0.29, upright mismatches 10.
@@ -430,7 +430,7 @@ tips it forward.
 **2026-11-01 — groups B and C, tp-2's hover.**
 - **`_WEIGHT()` is the mass still attached to the core** (`harness_weight.rcs`): 176.4 → 50.4 kg once `_SPLIT` cuts a
   Chip+Weight off, while `_CHIPS()` keeps counting the split chips. boidbit splits its 16 jet "bits" off every frame
-  and hovers its body on `_WEIGHT()`; counting the bits made RigidCraft' body climb at 5 m/s to 106 m (group C).
+  and hovers its body on `_WEIGHT()`; counting the bits made RigidCraft's body climb at 5 m/s to 106 m (group C).
   Now it hovers at 11.7 m (original 11.3 → 14.3); score 50.5 → 1.4.
 - **A Jet of option 2 (air balloon) gives no force in the air** (`rc_models40.sh`); option 1 (hydrogen) lifts.
   tp-2 carries two option-2 jets (power 1200 and 4000) that RigidCraft counted as 867 N of buoyancy: it climbed while
@@ -439,7 +439,7 @@ tips it forward.
 - Plate edges dragging on the ground barely brake (`rc_models39.sh`: sleds riding on plates folded down 30/60° accelerate
   almost freely), so RCModel1's bike does not stop on its stands. In the original its steering (spring 0.012) flops
   sideways while it stands still for 4 s and the turned front wheel stops it (screenshot `bikelate.png`; it rides
-  fine when powered from the start); RigidCraft' steering stays within 8°. Open.
+  fine when powered from the start); RigidCraft's steering stays within 8°. Open.
 - Group B (ender, skal, danboo) is the original's own breakdown: ender's core sinks to −1.3 m into the ground and
   its velocity jitters at 35–54 m/s while it barely moves. Not reproduced on purpose.
 Corpus: runs scoring above 1 21 → 20, median 0.29 → 0.28.
@@ -451,7 +451,7 @@ Corpus: runs scoring above 1 21 → 20, median 0.29 → 0.28.
   in RigidCraft; what keeps it from flopping while parked is presumably the tyre's sideways grip at standstill.
   Not changed (it governs every vehicle).
 - **1wheel** (`harness_axes4.rcs`): all chip axes match the original. Two plates of its flywheel face the direction
-  of travel and brake RigidCraft' rider with ~350 N each at 5.8 m/s; the original rides at 7.5 m/s and yawed 160°
+  of travel and brake RigidCraft's rider with ~350 N each at 5.8 m/s; the original rides at 7.5 m/s and yawed 160°
   while idle, i.e. its flywheel (a Wheel with reaction) spun up after the landing — spinning plates average less drag.
   A transient of its control; not chased further.
 - **First frame**: running only the first frame's physics before the script (knob `firstScriptAfterPhysics`)
@@ -481,7 +481,7 @@ two legs folded A° down through spring joints, level Frame feet, dropped from t
 The original's joints give at the impact within one frame, dip only a few centimetres below where they settle, never
 rebound, and creep to the settled angle over 10–20 frames; the damper value makes no difference. They also settle
 1.6–2.3× lower than the 3.7·10⁶·spring² torsion spring that fits the cantilevered arm (`rc_models33.sh`), and even
-spring 1 sags 0.024 (feet slide outward only 1–2 cm). RigidCraft' motor spring stores the impact and throws the body
+spring 1 sags 0.024 (feet slide outward only 1–2 cm). RigidCraft's motor spring stores the impact and throws the body
 0.1–0.26 m up. Tried on the Rust core and not adopted: the damping scaled ×2/×4 (rebound less, step response too slow);
 rapier 0.36's joint softness (a locked joint, natural frequency f0·spring^p, damping ratio 1–30) with the command
 applied as a servo — it can match this table (f0 60, p 1, ratio 10) and the step response (0.56/1.10/1.02 against
@@ -492,7 +492,7 @@ mass-normalised soft constraint; its law under external load is still open.
 **2026-11-02 — the same, scaled (one round).** `rc_models43.sh` (`law_<spring>_L<segments>_w<option>`): the
 rc_models42 body with its four Weights at option 1/2/4 (529/932/1739 kg in all) on legs of one or two Frames, 30°
 down, damper 0.5. Settled fold angle (30° unloaded) and an effective stiffness from the static torque estimate
-(half the weight at the foot minus the leg's own weight; the estimate reads RigidCraft' motor springs ~1.4× too stiff,
+(half the weight at the foot minus the leg's own weight; the estimate reads RigidCraft's motor springs ~1.4× too stiff,
 so compare the columns rather than with 3.7·10⁶·spring²):
 
 | case | fold orig / RigidCraft | k estimate orig / RigidCraft (N·m/rad) |
@@ -504,7 +504,7 @@ so compare the columns rather than with 3.7·10⁶·spring²):
 | 0.1, L1, 529 / 932 / 1739 kg | 23.2 / 18.9 / 12.4° — 28.1 / 26.3 / 22.8° | 17 000 / 20 000 / 24 000 — 60 000 / 57 000 / 56 000 |
 | 0.1, L2, 554 / 958 kg | 21.5 / 16.2° — 26.0 / 22.4° | 24 000 / 27 000 — 49 000 / 48 000 |
 
-In this load case the original's spring joints are 2–5× softer than RigidCraft' (the gap shrinks with load and with a
+In this load case the original's spring joints are 2–5× softer than RigidCraft's (the gap shrinks with load and with a
 longer, heavier leg beyond the joint), and its spring-1 joints give too (≈1.5·10⁵ N·m/rad, as the 2026-10-27 arm's
 0.7° under 1913 N·m). A damping proportional to stiffness (c = k·T, the ODE-like form that would make a light
 subtree overdamped and a heavy one ring) passes the step response at T = 0.01–0.02 s (spring 0.2: 0.51/1.07/0.98
@@ -535,7 +535,7 @@ the bike's stop, the landing rebound of rc_models42 (the original's spring joint
 changes their stiffness, not that).
 
 **2026-11-03 — load damping of spring joints (adopted, fitted on the corpus).** The landing rigs above show the
-original's spring joints taking an impact without rebound whatever their damper; RigidCraft' damping is over the
+original's spring joints taking an impact without rebound whatever their damper; RigidCraft's damping is over the
 subtree's inertia (a light leg), so under a load coming through the foot it is nearly undamped. Damping over the rest
 of the model's inertia as well (ratio 0.3, independent of damper) removes the rebound in the rigs (overshoot 0.00–0.04
 against the original's 0.01–0.03) but, applied to every joint, slows the commanded step response (an arm on a

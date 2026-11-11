@@ -262,8 +262,7 @@ function crossSlopes(): Pick<Scenario, 'ground' | 'terrainFaces' | 'terrainBound
   return { ...heightfield(xs, zs, heights), centerStripe };
 }
 const sideSlopes = crossSlopes();
-/** Six transverse humps. The left side barely ripples; the right side reaches
- * axle height. A long flat entry and runout allow a repeatable approach. */
+/** Three climbs of 6, 12 and 18 degrees, each ending on a level landing. */
 function hillClimb(): Scenario {
   const xs = [-14, 14], zs = [18, -12], heights = [[0, 0], [0, 0]];
   let z = -12, y = 0;
@@ -298,6 +297,8 @@ function hillClimb(): Scenario {
   };
 }
 
+/** Six transverse humps. The left side barely ripples; the right side reaches
+ * axle height. A long flat entry and runout allow a repeatable approach. */
 function washboard(): Pick<Scenario, 'ground' | 'terrainFaces' | 'terrainBounds' | 'bumpSection'> {
   const xs = [-22, -8, 0, 8, 22];
   const zs = [18, 0, -12];

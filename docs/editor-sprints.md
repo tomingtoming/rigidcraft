@@ -1,6 +1,6 @@
 # Visual editor sprints
 
-Independent implementation from RigidCraft' format parser and public behavior;
+Independent implementation from RigidCraft's format parser and public behavior;
 no RCD/RCM implementation source or assets used.
 
 ## 2026-10-29 — Power and controls
@@ -2113,7 +2113,7 @@ Lua-free design and only checks takeoff.
 
 ## 2026-10-30 — The original's camera views A–J (Sprint 70)
 
-Goal: replace RigidCraft' own runtime camera (chase/orbit/top/onboard on 1–4) with the original's views,
+Goal: replace RigidCraft's own runtime camera (chase/orbit/top/onboard on 1–4) with the original's views,
 following the owner's choices: original keys plus digits, view A as the default, keep mouse/touch
 as an extra, implement every measured view. Measurements: docs/measured.md (camera).
 

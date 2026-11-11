@@ -20,7 +20,7 @@ for n, path in idx.items():
         missing.append((n, path, open(err).read()[:80] if os.path.exists(err) else 'no snap output')); continue
     res = []
     for op, sp in ((o1, s1), (o30, s30)):
-        o, s = load(op, False), load(sp, False)  # RigidCraft' _X already reports the original's left-handed x
+        o, s = load(op, False), load(sp, False)  # RigidCraft's _X already reports the original's left-handed x
         if not o or not s or 0 not in o or 0 not in s: res.append((None,) * 4); continue
         oc, sc = o[0][1:], s[0][1:]
         common = [c for c in o if c in s]

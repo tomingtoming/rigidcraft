@@ -26,7 +26,6 @@ it('toggles assist once per C press and flies a manual loop', async () => {
       const a=angle(); turn+=Math.atan2(Math.sin(a-previous),Math.cos(a-previous)); previous=a;
       minHeight=Math.min(minHeight,sim.corePosition().y);
     }
-    console.log({ turn, minHeight, height:sim.corePosition().y });
     expect(turn).toBeGreaterThanOrEqual(Math.PI*2);
     expect(minHeight).toBeGreaterThan(3);
     expect(sim.physics.tiles.every(t => t.tile.parent == null || sim.api()._PARENT(t.tile.chipIndex)>=0)).toBe(true);
