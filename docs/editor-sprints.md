@@ -2440,6 +2440,7 @@ marks and in a paused flight with identical camera matrices within each row.
 Three, toon bands/edge lines, a studio reflection and a paper grid are rendered
 in the real WebGL scene. Run node tools/style-comparison.mjs with a screenshot
 directory. The materials are preview choices pending the player's decision.
+(The tool was removed on 2026-11-11, after the cel style was adopted; it is in the git history.)
 
 Retrospective: a paused simulation still lets the chase camera settle, so the
 capture freezes its transform during the comparison. Separately, the airborne

@@ -39,7 +39,6 @@ body { display: grid; grid-template-columns: 380px 1fr; }
 #keys { display: flex; align-content: end; align-items: end; gap: 6px; flex-wrap: wrap; min-height: var(--dial-height, 0px); padding-right: calc(var(--dial-width, 0px) + 6px); }
 #keys .cap { pointer-events: auto; display: grid; place-items: center; min-width: 44px; height: 44px; padding: 0 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); color: #1d2328; font: 600 15px/1 var(--mono); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); transition: transform 60ms, background 60ms; cursor: pointer; user-select: none; touch-action: none; }
 #keys .cap[data-down='true'] { background: var(--accent); transform: translateY(2px); box-shadow: none; }
-#keys .cap small { font-size: 9px; font-weight: 500; color: #4a535c; letter-spacing: 0.02em; }
 
 @media (max-width: 800px) {
   body { grid-template-columns: 1fr; grid-template-rows: 1fr 40vh; }
@@ -62,7 +61,6 @@ button:disabled { opacity: .4; cursor: default !important; }
 .edges button:nth-child(3) { grid-row: 2; grid-column: 3; }
 .edges button:last-child { grid-row: 3; grid-column: 2; }
 .building #vals, .building #out, .building #keys, .building #hud { display: none; }
-@media(max-width: 800px) { .building { grid-template-rows: 45vh 55vh; } #builder { max-height: 36vh; } }
 
 .building #side { grid-template-rows: auto minmax(0, auto) minmax(58px, 1fr) auto; }
 .building #builder { min-height: 0; }
@@ -150,14 +148,13 @@ button:disabled { opacity: .4; cursor: default !important; }
 #part-search-detail { overflow-wrap:anywhere; }
 
 .edges button { display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.2; }
-.edge-count { font-size:10px; line-height:1.2; color:var(--dim); }
 #script-error[hidden] { display: none; }
 #script-error { color: #ff8a80; display: flex; gap: 8px; align-items: center; padding: 2px 8px; }
 #api-list { width: 100%; }
 #api-desc { margin: 4px 0; min-height: 1.2em; font-size: 12px; opacity: .85; }
 /* contrast and target size: the edge counts sit on the #303840 buttons (≥4.5:1), the view button and the
    collapsible section headings are at least 24 px */
-.edge-count { font-size: 11px; color: #b4bcc4; }
+.edge-count { font-size: 11px; line-height: 1.2; color: #b4bcc4; }
 #viewmode { background: transparent; color: var(--ink); border: 1px solid #333a42; border-radius: 6px; min-width: 34px; height: 30px; font-size: 14px; cursor: pointer; }
 #builder summary { cursor: pointer; min-height: 24px; padding: 6px 0; }
 #source-hint { padding: 2px 12px; font-size: 11px; color: var(--dim); background: #15181c; }
@@ -268,7 +265,6 @@ button:disabled { opacity: .4; cursor: default !important; }
 
 .bp-add { flex-wrap: wrap; }
 .bp-add #debug-bp-cond { flex: 1; min-width: 8em; }
-.bp-add #debug-bp-after { width: 5em; }
 .debug-console { margin-top: auto; padding-top: 6px; }
 #debug-console-log { max-height: 7em; overflow: auto; font: 12px/1.4 var(--mono); }
 #debug-console-log .console-in { color: var(--dim); }
