@@ -3,7 +3,7 @@
 set -u
 export WINEPREFIX=$HOME/.wine-rc WINEARCH=win32 WINEDEBUG=-all
 RC=$HOME/rc/RC15B26; RES=$RC/Resources; OUT=/mnt/d/rigidcraft-models/quarantine/original/runs; M=$HOME/rc/models
-sed "s/\r//" /mnt/c/Users/toming/AppData/Local/Temp/harness_turn3.rcs > "$RES/System.rcs"
+sed "s/\r//" "$(dirname "$0")/harness_turn3.rcs" > "$RES/System.rcs"
 for spec in "$@"; do
   IFS=: read -r name model <<< "$spec"
   cp "$M/$model" "$RES/Basic.txt"; rm -f "$RES/log.txt"

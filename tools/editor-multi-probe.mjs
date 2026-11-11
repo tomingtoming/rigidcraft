@@ -29,7 +29,7 @@ try{
  await page.fill('#part-angle','25');await page.locator('#part-angle').press('Enter');
  await page.locator('#part-color').evaluate(e=>{e.value='#336699';e.dispatchEvent(new Event('change'));});
  await page.selectOption('#part-type','Frame');
- const edited=await page.evaluate(()=>window.__editor?.document?.text ?? document.querySelector('#source').value);
+ const edited=await page.inputValue('#source');
  const nodes=await page.evaluate(()=>[...document.querySelector('#source').value.matchAll(/([NSWE]):(\w+)\(([^)]*)\)/g)].map(m=>m.slice(1).join('|')));
  assert.deepEqual(nodes,['N|Frame|angle=25, color=#336699','N|Chip|','W|Frame|angle=25, color=#336699','E|Frame|angle=25, color=#336699','S|Chip|']);
  assert.match(edited,/Lua \{ function main\(\) end \}/);

@@ -25,5 +25,5 @@ WPID=$!
 sleep 10; xwd -root -silent | convert xwd:- "$OUT/${scene}_p${p}.png" 2>/dev/null
 sleep $((secs - 10))
 kill $WPID 2>/dev/null; sleep 1; wineserver -k 2>/dev/null; kill $XPID 2>/dev/null; sleep 1
-if cp "$RES/log.txt" "$OUT/${scene}_p${p}${LAND_BASE:+_b$LAND_BASE}.csv" 2>/dev/null; then echo "$scene: log $(wc -l < "$OUT/${scene}_p${p}.csv") lines"; else echo "$scene: NO LOG"; fi
+if cp "$RES/log.txt" "$OUT/${scene}_p${p}${LAND_BASE:+_b$LAND_BASE}.csv" 2>/dev/null; then echo "$scene: log $(wc -l < "$OUT/${scene}_p${p}${LAND_BASE:+_b$LAND_BASE}.csv") lines"; else echo "$scene: NO LOG"; fi
 cp "$RES/Land.x.orig" "$RES/Land.x"; cp "$RES/Basic.txt.orig" "$RES/Basic.txt"; cp "$RES/System.rcs.orig" "$RES/System.rcs"

@@ -3,4 +3,5 @@
 M=/mnt/d/rigidcraft-models/quarantine/original/runs/ground/models
 L=""
 for n in "$@"; do cp "$M/$n.txt" "$HOME/rc/models/gd_$n.txt"; L="$L gd_$n:gd_$n.txt:0"; done
-HARNESS=/mnt/d/rigidcraft/tools/orig-harness/harness_servo2.rcs bash /mnt/d/rigidcraft/tools/orig-harness/rc_batch.sh $L
+D=$(cd "$(dirname "$0")" && pwd)
+HARNESS=$D/harness_servo2.rcs bash "$D/rc_batch.sh" $L

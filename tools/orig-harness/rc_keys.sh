@@ -9,7 +9,7 @@ OUT=/mnt/d/rigidcraft-models/quarantine/original/runs
 [ -f "$RES/System.rcs.orig" ] || cp "$RES/System.rcs" "$RES/System.rcs.orig"
 [ -f "$RES/Basic.txt.orig" ] || cp "$RES/Basic.txt" "$RES/Basic.txt.orig"
 cp "$RES/Basic.txt.orig" "$RES/Basic.txt"
-sed "s/\r//" /mnt/c/Users/toming/AppData/Local/Temp/harness_keys.rcs > "$RES/System.rcs"
+sed "s/\r//" "$(dirname "$0")/harness_keys.rcs" > "$RES/System.rcs"
 rm -f "$RES/log.txt"
 export DISPLAY=:99
 Xvfb :99 -screen 0 1280x800x24 >/dev/null 2>&1 &
