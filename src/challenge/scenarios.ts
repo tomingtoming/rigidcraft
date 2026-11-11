@@ -515,7 +515,8 @@ export const SCENARIOS: Scenario[] = [
     timeLimit: 50,
     brakingTest: { entryKmh: 36, stopKmh: 1 },
     checkpoint: [-6.5, 6.5, 0, 2.5, -34, -28],
-    goal: [-6.5, 6.5, 0, 2.5, -85, -70],
+    // where the stock car stops when it brakes at the white line: z −84 to −94, depending on the run-up
+    goal: [-6.5, 6.5, 0, 2.5, -100, -80],
   },
   {
     id: 'sprint',

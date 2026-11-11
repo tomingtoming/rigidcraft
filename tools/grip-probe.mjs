@@ -104,7 +104,7 @@ try {
       for (let i = 0; i < 500 && !document.getElementById('challenge-result').open; i++) {
         step.click();
         const p = sim.corePosition();
-        if (p.z < -70 && p.z > -85 && Math.abs(p.x) <= 6.5 && sim.coreVelocity().length() > 1) enteredAtSpeed = true;
+        if (p.z < -80 && p.z > -100 && Math.abs(p.x) <= 6.5 && sim.coreVelocity().length() > 1) enteredAtSpeed = true;
       }
       return { enteredAtSpeed, clear: document.getElementById('challenge-result').open, speedKmh: sim.coreVelocity().length() * 3.6 };
     });
