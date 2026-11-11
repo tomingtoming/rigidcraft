@@ -30,6 +30,7 @@ describe('script helpers in the builder', () => {
   it('finds the line a Lua error names', () => {
     const src = 'a\nbb\nccc\n';
     expect(diagnosticLine(src, 'Lua error: line 3: attempt to call nil')).toEqual({ line: 3, start: 5, end: 8 });
+    expect(diagnosticLine(src, "expected ')' but found 'EOF' (line 2)")?.line).toBe(2); // the .rc parser's form
     expect(diagnosticLine(src, 'no line here')).toBeNull();
     expect(diagnosticLine(src, 'line 99: x')).toBeNull();
   });

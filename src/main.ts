@@ -99,7 +99,7 @@ const liveCheck = () => {
     const request = ++checkGeneration, text = sourceEl.value;
     const msg = await (await import('./sim/rust-simulation')).checkSource(text);
     if (request !== checkGeneration) return;
-    const m = /\bline (\d+):\s*([\s\S]*)/.exec(msg);
+    const m = /\bline (\d+)[:)]/.exec(msg);
     liveError = msg ? { line: m ? Number(m[1]) : 0, message: msg } : null;
     hintEl.classList.toggle('error', !!msg);
     hintEl.textContent = msg ? `文法：${msg}` : hintText;
@@ -387,7 +387,9 @@ window.addEventListener('keydown', (e) => {
     }
     return;
   }
-  if (e.code === 'Space') { e.preventDefault(); paused = !paused; } // Space carries no key number in the original
+  // browser chords (Ctrl+Shift+J, Ctrl+H, Alt+digit…) are not the page's keys; Ctrl+F8–F12 are views F–J
+  if ((e.ctrlKey || e.metaKey || e.altKey) && !/^F(8|9|1[012])$/.test(e.code)) return;
+  if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) paused = !paused; } // Space carries no key number in the original
   if (e.code === 'Period' && debug.open) debug.stepForward(); // . / , step one frame (debug panel open)
   if (e.code === 'Comma' && debug.open) void debug.stepBack();
   // the original's default scenario: H drops a ball (r 0.6, specific gravity 0.3) 6 m up at x = 2, J cycles the wind
@@ -398,7 +400,7 @@ window.addEventListener('keydown', (e) => {
   if (fkey) { e.preventDefault(); setView(Number(fkey[1]) - 8 + (e.ctrlKey ? 5 : 0)); }
   if (e.code === 'KeyI' || e.code === 'KeyO') scene.zoomStep(e.code === 'KeyI' ? -1 : 1); // the original's view zoom
   if (e.code === 'KeyR' && sim) { previousModel = undefined; acc = 0; sim.reset(); scene.snapModel(sim.modelCenter(), sim.scenario); } // R: reset in place (OnReset)
-  if (e.code === 'KeyU') void loadAndShare(sourceEl.value); // U: reload from source (OnInit)
+  if (e.code === 'KeyU' && !e.repeat) void loadAndShare(sourceEl.value); // U: reload from source (OnInit)
 });
 
 // ---- camera orbit ----

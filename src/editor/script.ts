@@ -112,9 +112,9 @@ export function insertScript(text: string, caret: number, snippet: string): { te
   return { text: text.slice(0, end) + lead + snippet + '\n' + text.slice(end), caret: end + lead.length + snippet.length };
 }
 
-/** The first "line N:" a diagnostic names, as offsets of that line in the source. */
+/** The first "line N:" (Lua) or "(line N)" (.rc parser) a diagnostic names, as offsets of that line in the source. */
 export function diagnosticLine(text: string, message: string): { line: number; start: number; end: number } | null {
-  const m = /\bline (\d+):/.exec(message);
+  const m = /\bline (\d+)[:)]/.exec(message);
   if (!m) return null;
   const line = Number(m[1]), lines = text.split('\n');
   if (line < 1 || line > lines.length) return null;

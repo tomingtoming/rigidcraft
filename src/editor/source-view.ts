@@ -18,7 +18,7 @@ const LUA_KEYWORDS = new Set(['and', 'break', 'do', 'else', 'elseif', 'end', 'fa
 const LUA_LIBS = new Set(['math', 'string', 'table', 'utf8', 'print', 'out', 'pairs', 'ipairs', 'tostring', 'tonumber', 'type', 'next', 'select', 'pcall', 'error', 'unpack', 'setmetatable', 'getmetatable', 'rawget', 'rawset', 'assert']);
 const RC_BLOCKS = new Set(['val', 'key', 'body', 'lua', 'script']);
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const span = (cls: string, s: string) => `<span class="hl-${cls}">${esc(s)}</span>`;
 
 /** Lua: comments, strings, numbers, keywords, the script API (_NAME), library names */

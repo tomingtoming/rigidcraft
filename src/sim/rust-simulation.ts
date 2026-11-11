@@ -512,7 +512,7 @@ export class RustSimulation implements SimView {
     if (!m || this.id < 0) return;
     const len = m._core_state_len(this.id);
     if (len < HEADER_LENGTH) return;
-    const h = m.HEAPF64;
+    let h = m.HEAPF64;
     let o = m._core_state_ptr(this.id) / 8;
     const at = (slot: number) => h[o + slot];
     if (at(HEADER.VERSION) !== LAYOUT_VERSION) throw new Error(`core state layout ${at(HEADER.VERSION)} (expected ${LAYOUT_VERSION}); rebuild core/pkg`);
@@ -533,6 +533,7 @@ export class RustSimulation implements SimView {
       this.errorGen = errorGen;
       this.scriptError = hasError ? m.UTF8ToString(m._core_error(this.id)) : null;
     }
+    h = m.HEAPF64; // the two getters above allocate in the core: a grown heap replaces the views
     o += HEADER_LENGTH;
     const tiles = this.physics.tiles;
     if (tiles.length !== nTiles) throw new Error(`core has ${nTiles} tiles, the assembly ${tiles.length}`);

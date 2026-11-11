@@ -658,10 +658,12 @@ export class SceneView {
     if (s.mission?.via) zone(s.mission.via, 0xfdd835, 0xf9a825);
   }
   private ballMeshes: THREE.Mesh[] = [];
+  /** unit sphere: a mesh is reused by whichever ball has its index, so the radius is a per-frame scale */
+  private ballGeo = new THREE.SphereGeometry(1, 24, 16);
   sync(world: PhysicsView, frame?: ModelFrame): void {
     while (this.ballMeshes.length < world.balls.length) {
       const b = world.balls[this.ballMeshes.length];
-      const m = new THREE.Mesh(new THREE.SphereGeometry(b.radius, 24, 16), new THREE.MeshStandardMaterial({ color: new THREE.Color(...b.color), roughness: 0.5 }));
+      const m = new THREE.Mesh(this.ballGeo, new THREE.MeshStandardMaterial({ color: new THREE.Color(...b.color), roughness: 0.5 }));
       m.castShadow = true;
       m.receiveShadow = true;
       this.scene.add(m);
@@ -675,6 +677,7 @@ export class SceneView {
       const r = b.body.rotation();
       m.position.set(t.x, t.y, t.z);
       m.quaternion.set(r.x, r.y, r.z, r.w);
+      m.scale.setScalar(b.radius);
       (m.material as THREE.MeshStandardMaterial).color.setRGB(...b.color);
     });
     world.crates.forEach((b, i) => {
@@ -719,6 +722,7 @@ export class SceneView {
   /** segments from _MOVE3D/_LINE3D: x1 y1 z1 x2 y2 z2 r g b */
   setLines3d(buf: number[]): void {
     const n = buf.length / 9;
+    if (n === 0) { this.lines.visible = false; return; }
     const pos = new Float32Array(n * 6);
     const col = new Float32Array(n * 6);
     for (let i = 0; i < n; i++) {
