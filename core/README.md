@@ -11,7 +11,8 @@ natively and in the page. `src/ffi.rs` is the C ABI the page drives (any number 
 create/load/reset/input/step/free, ad-hoc `core_api`), `src/state.rs` the per-frame state buffer the page reads from
 `HEAPF64` (layout documented there), `src/sim/rust-simulation.ts` the page's adapter (it also runs under Node, so the
 vitest suites use it). The TypeScript core (rapier3d-compat + wasmoon) was removed on 2026-11-02; the TypeScript
-parser and assembler stay for the editor, checked against this crate by `tests/oracle.rs`.
+parser and assembler stay for the editor, checked against this crate by `tests/oracle.rs` (ignored by default, since the oracle JSON is outside the repository:
+`cargo test --release -- --ignored`).
 
 Native tools against the original's logs: `src/bin/replay.rs` (corpus driving and geometry), `src/bin/orig_compare.rs`
 (the measurement harness), `src/bin/terrain.rs` (terrain and step probes, `--features tools`); see `tools/README.md`.
@@ -21,13 +22,14 @@ Native tools against the original's logs: `src/bin/replay.rs` (corpus driving an
 ```
 cargo test --release                 # native
 cargo run --release --bin replay -- D:/rigidcraft-models/quarantine/original/runs   # corpus replay → snap_rust
-bun run build:core                   # browser: core/pkg/rigidcraft_core.{js,wasm} (core/build-wasm.ps1)
+bun run build:core                   # browser: core/pkg/rigidcraft_core.{js,wasm} (core/build-wasm.sh, in Docker)
 ```
 
-The browser build needs [emsdk](https://emscripten.org/docs/getting_started/downloads.html) (`emsdk install latest`,
-`emsdk activate latest`; on Windows run `python emsdk.py …` with a real Python if `python` is the Store stub) and
-`rustup target add wasm32-unknown-emscripten`. `build-wasm.ps1` sets the Emscripten environment for its own process
-only and points the C compiler, archiver and linker at `emcc.exe`/`emar.exe` (current emsdk ships no `.bat`).
+The browser build needs only Docker (on Windows, run it inside WSL 2). `Dockerfile` fixes the toolchain — Emscripten
+6.0.13 and Rust 1.93.0 with `wasm32-unknown-emscripten` — and `build-wasm.sh` builds in it, so the module is the same
+bytes on every machine; source paths inside it are rewritten to `crates/…` and `core/…`. Crates are cached in the
+Docker volume `rigidcraft-cargo`, build output in `core/target-docker`. To change a toolchain version, edit the
+`Dockerfile`, rebuild and commit the new `core/pkg`.
 Emscripten is used because C (Lua) does not build for `wasm32-unknown-unknown`.
 
 `.cargo/config.toml` also sets `CFLAGS` so Lua's string-hash seed is fixed (`luai_makeseed`): with it, and with

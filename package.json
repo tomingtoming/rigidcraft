@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "build:core": "powershell -ExecutionPolicy Bypass -File core/build-wasm.ps1",
+    "build:core": "bash core/build-wasm.sh",
     "test": "tsc -p tools && vitest run",
     "check:tools": "tsc -p tools",
     "preview": "vite preview",
