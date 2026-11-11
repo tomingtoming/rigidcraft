@@ -335,14 +335,15 @@ export class ChallengeUI {
     let best = previousBest;
     let note = '';
     if (cleared && within && !verified) {
+      // The best is one actual run: the fastest, or the cheaper of two equally fast ones.
       const faster = !best || time < best.time;
-      const cheaper = !best || cost < best.cost;
+      const cheaper = !!best && time === best.time && cost < best.cost;
       // An old best may lack splits. Only an equally fast or faster lap can supply them.
       const saveSectors = !!s.sectors && (faster || (time === best?.time && !best.sectorDurations));
       if (faster || cheaper || saveSectors) {
         if (faster || cheaper) note = best ? '自己ベスト更新！' : '初クリア！';
         best = {
-          ...best, time: Math.min(time, best?.time ?? Infinity), cost: Math.min(cost, best?.cost ?? Infinity),
+          ...(best ?? { time, cost }), ...(faster || cheaper ? { time, cost } : {}),
           ...(saveSectors ? { sectorDurations } : {}),
         };
         try { localStorage.setItem(`rigidcraft.challenge.${s.id}`, JSON.stringify(best)); } catch { /* private mode */ }

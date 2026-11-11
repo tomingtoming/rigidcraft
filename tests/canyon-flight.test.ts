@@ -42,5 +42,7 @@ it('flies the stock plane below the canyon walls through both bends', async () =
     expect(worst).toBeLessThan(24);
     expect(minHeight).toBeGreaterThan(2);
     expect(maxHeight).toBeLessThan(45);
+    sim.reset(); // back at the strip: the gates count again
+    expect(sim.ringsPassed).toBe(0);
   } finally {await sim.dispose();}
 });

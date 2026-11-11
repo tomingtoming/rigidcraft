@@ -295,8 +295,11 @@ export class RustSimulation implements SimView {
 
   private resetCore(): void {
     if (!this.assembly || !this.m || this.id < 0) return;
+    this.ringsPassed = 0;
+    this.checkpointPassed = false;
+    this.brakingEntryKmh = undefined;
+    this.missionProgress?.restart();
     if (this.scenario?.sectors) {
-      this.ringsPassed = 0;
       this.sectorFrames.length = 0;
       this.lapStartFrame = this.frame;
     }

@@ -117,8 +117,10 @@ sourceView.layer.append(luaApply);
 const applyLua = () => {
   if (!sim || builder?.active) return;
   const err = sim.reloadScript(sourceEl.value);
-  statusEl.textContent = err ? err : '';
-  if (!err) { luaApply.hidden = true; statusEl.textContent = ''; }
+  statusEl.textContent = err ?? '';
+  if (err) return;
+  luaApply.hidden = true;
+  try { buildKeyCaps(sim, parseRc(sourceEl.value).script?.source); } catch { /* the core accepted it; keep the caps */ }
 };
 luaApply.addEventListener('click', applyLua);
 // challenges: a course, a budget and a goal; the challenge rides in the URL (&c=) with the model and the run
@@ -198,7 +200,7 @@ async function load(source: string, request: number, player: Recording | null = 
     next.player = player; // a shared run replays from the first step
     sim = next;
     debug.attach(next, false);
-    scene.setScenario(next.scenario);
+    scene.setScenario(next.scenario, BARE);
     challenge.attach(next, false);
     (window as unknown as { __sim: SimView }).__sim = next;
     scene.rebuild(next.assembly!.tiles, next.env);
@@ -227,11 +229,11 @@ async function load(source: string, request: number, player: Recording | null = 
   }
 }
 
-function buildKeyCaps(s: SimView): void {
+function buildKeyCaps(s: SimView, script = s.model.script?.source): void {
   keysEl.replaceChildren();
   keyCaps = [];
   // keys bound in Key{} plus any _KEY(n) literal the script polls
-  const polled = [...(s.model.script?.source.matchAll(/_KEY(?:DOWN|UP)?\s*\(\s*(\d+)\s*\)/g) ?? [])].map((m) => Number(m[1]));
+  const polled = [...(script?.matchAll(/_KEY(?:DOWN|UP)?\s*\(\s*(\d+)\s*\)/g) ?? [])].map((m) => Number(m[1]));
   const used = [...new Set([...s.model.keys.map((k) => k.key), ...polled])].sort((a, b) => a - b);
   keys.setWasdAliases(used);
   for (const n of used) {
@@ -399,7 +401,7 @@ window.addEventListener('keydown', (e) => {
   const fkey = /^F(8|9|1[012])$/.exec(e.code);
   if (fkey) { e.preventDefault(); setView(Number(fkey[1]) - 8 + (e.ctrlKey ? 5 : 0)); }
   if (e.code === 'KeyI' || e.code === 'KeyO') scene.zoomStep(e.code === 'KeyI' ? -1 : 1); // the original's view zoom
-  if (e.code === 'KeyR' && sim) { previousModel = undefined; acc = 0; sim.reset(); scene.snapModel(sim.modelCenter(), sim.scenario); } // R: reset in place (OnReset)
+  if (e.code === 'KeyR' && sim) { previousModel = undefined; acc = 0; lastCoreVel = null; crateVel.length = 0; sim.reset(); scene.snapModel(sim.modelCenter(), sim.scenario); } // R: reset in place (OnReset)
   if (e.code === 'KeyU' && !e.repeat) void loadAndShare(sourceEl.value); // U: reload from source (OnInit)
 });
 

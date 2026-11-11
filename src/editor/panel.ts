@@ -573,7 +573,8 @@ export class BuildPanel {
     this.angleSettings.disabled = !tile.parent;
     this.angleSettings.setAttribute('aria-expanded', String(!this.angleRow.hidden));
     this.angleControl.replaceChildren(new Option('固定', 'constant'));
-    for (const v of parseRc(this.document.text).vals) {
+    const vals = parseRc(this.document.text).vals;
+    for (const v of vals) {
       const keys = this.document.controlKeyLabel(v.name);
       const label = keys ? `${keys} · ${v.name}` : v.name;
       this.angleControl.add(new Option(label, v.name.toUpperCase()));
@@ -594,7 +595,7 @@ export class BuildPanel {
     this.power.disabled = !constant && powerStrength === null;
     document.getElementById('power-label')!.textContent = powerStrength === null ? '出力' : '最大出力（共通）';
     this.powerControl.replaceChildren(new Option('固定', 'constant'));
-    for (const v of parseRc(this.document.text).vals) {
+    for (const v of vals) {
       const keys = this.document.controlKeyLabel(v.name), label = keys ? `${keys} · ${v.name}` : v.name;
       this.powerControl.add(new Option(label, v.name.toUpperCase()));
       this.powerControl.add(new Option(`${label}（逆）`, `-${v.name.toUpperCase()}`));

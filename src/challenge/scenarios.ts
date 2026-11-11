@@ -890,6 +890,8 @@ export class MissionProgress {
   /** the frame the Core first entered `via`, or null */
   visitedAt: number | null = null;
   constructor(readonly scenario: Scenario) {}
+  /** a reset puts the model back at the start: the waypoint and the hold count again (a finished mission stays finished) */
+  restart(): void { this.held = 0; this.visitedAt = null; }
   /** Track consecutive frames until the required hold is complete. */
   step(frame: number, core: { position: { x: number; y: number; z: number }; quaternion: { x: number; z: number } }, velocity: { x: number; y: number; z: number }, clearance?: number): void {
     const m = this.scenario.mission!;

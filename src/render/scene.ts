@@ -22,6 +22,7 @@ const PALETTE: Record<string, number> = {
   trim: 0xb7ff7f,
   trimf: 0xcaffa0,
   wheel: 0x303030,
+  rlw: 0x303030,
   jet: 0xff6a3d,
   weight: 0x6b4f3a,
   cowl: 0xffffff,
@@ -508,13 +509,13 @@ export class SceneView {
   }
 
   /** a challenge's course in place of the default one (null: back to the default course) */
-  setScenario(s: Scenario | null): void {
+  setScenario(s: Scenario | null, bare = false): void {
     const bounds = s?.terrainBounds;
     const span = bounds ? Math.max(bounds[1] - bounds[0], bounds[3] - bounds[2]) : 0;
     this.scene.fog = new THREE.Fog(0xe7edf1, Math.max(60, span * 0.24), Math.max(220, span * 1.1));
     this.camera.far = Math.max(500, span * 1.6);
     this.camera.updateProjectionMatrix();
-    for (const m of [...this.courseMeshes, ...this.crateMeshes]) m.visible = !s;
+    for (const m of [...this.courseMeshes, ...this.crateMeshes]) m.visible = !s && !bare;
     for (const o of this.floor) o.visible = !s?.ground;
     for (const c of [...this.scenarioGroup.children]) {
       this.scenarioGroup.remove(c);

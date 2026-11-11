@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { RustSimulation } from '../src/sim/rust-simulation';
 import { KeyState } from '../src/input/keys';
-import { MISSIONS } from '../src/challenge/scenarios';
+import { MISSIONS, MissionProgress } from '../src/challenge/scenarios';
 
 // Every mission fails with its starting model and clears with a short solution, so a physics change cannot leave a
 // lesson unsolvable (or solved without any Lua).
@@ -30,6 +30,12 @@ async function framesToClear(source: string, mission: (typeof MISSIONS)[number])
 }
 
 describe('missions', () => {
+  it('counts the waypoint and the hold again after a reset', () => {
+    const progress = new MissionProgress(MISSIONS.find((m) => m.id === 'shuttle')!);
+    progress.visitedAt = 40; progress.held = 12;
+    progress.restart();
+    expect([progress.visitedAt, progress.held]).toEqual([null, 0]);
+  });
   it.each(MISSIONS.map((m) => [m.id, m] as const))('%s fails as given and clears with a solution', async (id, mission) => {
     const [from, to] = SOLUTIONS[id];
     const starter = mission.mission!.starter;
