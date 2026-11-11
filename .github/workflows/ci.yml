@@ -21,6 +21,7 @@ jobs:
       - run: bun run build
       - run: bun run test
       - run: bun x playwright install --with-deps chromium firefox webkit
+        timeout-minutes: 10 # apt has retried without end when the runner could not resolve the package mirrors
       - run: bun run test:plane
         timeout-minutes: 2
       - run: bun run test:editor:scale
