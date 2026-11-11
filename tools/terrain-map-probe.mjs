@@ -9,7 +9,7 @@ try {
   await page.click('#terrain-map summary');
   await page.waitForFunction(() => document.querySelectorAll('#terrain-map path').length === 5);
   const arrow = page.locator('.map-direction');
-  assert.equal(await arrow.isVisible(), false);
+  await arrow.waitFor({ state: 'hidden' }); // shown while the car settles from its spawn drop, hidden at rest
   await page.focus('#view');
   for (const { key, north } of [{ key: 'ArrowUp', north: true }, { key: 'ArrowDown', north: false }]) {
     await page.keyboard.down(key);

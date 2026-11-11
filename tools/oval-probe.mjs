@@ -84,6 +84,7 @@ try {
   await page.reload();
   const legacy = await runLap(40);
   assert.ok(!legacy.includes('自己最速周'));
-  assert.deepEqual(await stored(), { time: 1, cost: 36 });
-  console.log('Slow lap compared against fastest lap; older best preserved after cheaper finish.');
+  // The best is one real run: a slower, cheaper lap does not replace it or lend it its cost.
+  assert.deepEqual(await stored(), { time: 1, cost: 40 });
+  console.log('Slow lap compared against fastest lap; older best kept whole after a slower, cheaper finish.');
 } finally { await browser.close(); }

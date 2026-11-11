@@ -38,7 +38,8 @@ try {
  });
  for(const r of results){assert.ok(r.kmh>30);assert.ok(r.sameTick>20);assert.equal(r.smooth,process.argv.includes('--baseline')?0:r.sameTick,JSON.stringify(r));assert.ok(r.worstOffset<1e-6,JSON.stringify(r));}
  // Pause and reset use the current pose, without blending back to the previous run.
- await page.locator('#view').focus();await page.keyboard.press('Space');
+ // frames are manual here, so focus directly: a locator action can wait on an animation frame that never comes
+ await page.evaluate(()=>document.getElementById('view').focus());await page.keyboard.press('Space');
  await page.evaluate(()=>window.__advanceFrame(1000/60));
  const paused=await page.evaluate(()=>{const s=window.__scene;return s.views.get(0).mesh.position.distanceTo(window.__sim.corePosition());});
  assert.ok(paused<1e-6);

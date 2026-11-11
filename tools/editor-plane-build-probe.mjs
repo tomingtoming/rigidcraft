@@ -17,7 +17,7 @@ try{
    const field=attr==='angle'?'#part-angle':'#part-power',control=attr==='angle'?'#angle-control':'#power-control';
    if(Number.isFinite(Number(expression))){await page.fill(field,expression);await page.locator(field).press('Tab');continue;}
    if(attr==='angle'&&!await page.locator('#angle-control-row').isVisible())await page.click('#angle-settings');
-   const name=expression.replace(/^-/,'');
+   const name=expression.replace(/^-/,'').replace(/\*JET_SCALE$/,''); // the stock jets are THROTTLE*JET_SCALE (assist); the built plane binds THROTTLE
    if(!bindings.has(name)){
     if(name==='THROTTLE'){await page.fill(field,'60000');await page.locator(field).press('Tab');await page.selectOption(control,'hold:zx');}
     else{
