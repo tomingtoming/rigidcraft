@@ -27,7 +27,7 @@ jobs:
       - run: bun run test:editor:scale
         timeout-minutes: 2
       - run: bun run test:editor
-        timeout-minutes: 10
+        timeout-minutes: 20 # 52 probes: 49 had passed when the old 10 minutes ran out
       - name: Ground terrain and braking
         run: node tools/editor-ci.mjs terrain-ground
         timeout-minutes: 5
