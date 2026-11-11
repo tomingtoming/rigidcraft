@@ -213,10 +213,6 @@ impl LuaEngine {
         }
     }
 
-    pub fn lua(&self) -> Option<&Lua> {
-        self.lua.as_ref()
-    }
-
     /// `out()` rows written so far
     pub fn out_lines(&self) -> Vec<String> {
         self.out.borrow().clone()
@@ -321,9 +317,9 @@ impl LuaEngine {
         }
     }
 
-    /// true while a frame function is suspended mid-frame
-    pub fn suspended(&self) -> bool {
-        self.frame_thread.is_some()
+    /// drop a frame suspended at a breakpoint without resuming it (the model was reset)
+    pub fn abandon_frame(&mut self) {
+        self.frame_thread = None;
     }
 
     /// Run (or resume) the per-frame function. With breakpoints or a line step pending it runs as a coroutine that a
@@ -529,7 +525,7 @@ impl LuaEngine {
 
 /// `Math.max(0, Math.min(24, Math.floor(row)))`; a NaN row (nil, a non-numeric string) shows nowhere.
 fn set_row(out: &RefCell<Vec<String>>, row: f64, text: String) {
-    let r = js_max(0.0, js_min(24.0, row.floor()));
+    let r = js_max(0.0, js_min((OUT_ROWS - 1) as f64, row.floor()));
     if r.is_nan() {
         return;
     }

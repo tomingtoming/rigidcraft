@@ -11,7 +11,7 @@
 use super::api::{self, Arg, Ret};
 use super::keys::key_bit;
 use crate::model::{assemble, Vec3};
-use crate::physics::math::{from_vector, js_max, js_min, js_sign};
+use crate::physics::math::{js_max, js_min, js_sign};
 use crate::physics::{BuildOptions, PhysicsOptions, World};
 use crate::rc::{parse_rc, RcModel, ScriptLang};
 use crate::scripting::lua::{js_to_number, LuaEngine};
@@ -308,6 +308,9 @@ impl Simulation {
             world.reset_crates();
             s.ticks = 0.0;
         }
+        // a frame suspended at a breakpoint belongs to the run before the reset: it is not resumed
+        self.lua.abandon_frame();
+        self.mid_frame = false;
         crate::sim::seed_random(self.rng.get());
         self.call_lua("OnReset");
         self.rng.set(crate::sim::random_state());
@@ -539,9 +542,16 @@ impl Simulation {
     /// Evaluate Lua in the running block (the page's console), under this simulation's `_RND` state
     pub fn eval_lua(&mut self, code: &str) -> Result<String, String> {
         crate::sim::seed_random(self.rng.get());
-        self.push_vals_to_lua();
+        // Mid-frame the Lua globals are ahead of the Vals (the frame pulls them when it completes): pushing here would
+        // undo what the suspended frame has assigned so far.
+        let between_frames = !self.mid_frame;
+        if between_frames {
+            self.push_vals_to_lua();
+        }
         let r = self.lua.eval(code);
-        self.pull_vals_from_lua();
+        if between_frames {
+            self.pull_vals_from_lua();
+        }
         self.rng.set(crate::sim::random_state());
         self.out = self.lua.out_lines();
         r
@@ -573,12 +583,8 @@ impl Simulation {
         self.state.borrow_mut().world.world.insert_collider(cd, None);
     }
 
-    /// a static ground-like convex solid (a challenge course's box or ramp): false when the points span no volume
-    pub fn add_solid(&mut self, points: &[[f64; 3]]) -> bool {
-        self.add_surface(points, 1.0)
-    }
-
-    /// Authored grip scales both tyre limits. Ordinary solids keep the stock contact material.
+    /// a static ground-like convex solid (a challenge course's box or ramp): false when the points span no volume.
+    /// Authored grip scales both tyre limits; 1 keeps the stock contact material.
     pub fn add_surface(&mut self, points: &[[f64; 3]], grip: f32) -> bool {
         if !(0.01..=4.0).contains(&grip) {
             return false;
@@ -611,16 +617,6 @@ impl Simulation {
         self.state.borrow().ticks
     }
 
-    /// yaw of the core's forward (−Z) axis: the chase camera's orbit yaw (offset = −forward)
-    pub fn core_heading(&self) -> f64 {
-        let s = self.state.borrow();
-        if s.world.tiles.is_empty() {
-            return 0.0;
-        }
-        let f = Vec3::new(0.0, 0.0, -1.0).apply_quat(s.world.pose(0).quaternion);
-        (-f.x).atan2(-f.z)
-    }
-
     pub fn core_position(&self) -> Vec3 {
         let s = self.state.borrow();
         if s.world.tiles.is_empty() {
@@ -630,34 +626,6 @@ impl Simulation {
         }
     }
 
-    /// mass-weighted centre of every tile: the original's chase camera aims here, not at the core (a 6 m boom on one
-    /// side moved its target 1.24 m that way at the same 8 m eye distance)
-    pub fn model_center(&self) -> Vec3 {
-        let s = self.state.borrow();
-        let Some(a) = s.world.assembly() else { return Vec3::default() };
-        let mut c = Vec3::default();
-        let mut m = 0.0;
-        for (i, tb) in s.world.tiles.iter().enumerate() {
-            let mass = a.tiles[tb.tile].mass;
-            let w = if mass == 0.0 || mass.is_nan() { 1.0 } else { mass };
-            c = c.add(s.world.pose(i).position.scale(w));
-            m += w;
-        }
-        drop(s);
-        if m > 0.0 {
-            c.scale(1.0 / m)
-        } else {
-            self.core_position()
-        }
-    }
-
-    pub fn core_velocity(&self) -> Vec3 {
-        let s = self.state.borrow();
-        match s.world.tiles.first() {
-            Some(tb) => from_vector(s.world.world.bodies[tb.body].linvel()),
-            None => Vec3::default(),
-        }
-    }
 }
 
 /// The API as Lua globals: each function borrows the shared state for the length of the call.

@@ -31,10 +31,10 @@ pub const WHEEL_TORQUE_PER_POWER: f64 = 0.13; // N·m per power unit (measured: 
 /// (measured on the original 1.5B26: Basic car at power 2500, a/a0 = 0.877 at ω≈22 rad/s, 0.62 at ω≈69;
 /// no hard speed cap and no measurable air/rolling drag while coasting at 22 m/s)
 pub const WHEEL_SPIN_FADE: f64 = 180.0; // rad/s at which the torque would reach zero
-/// rapier solver: one substep with 16 internal PGS iterations. Sixteen substeps (the old setting) fed energy
+/// rapier solver: one substep with 48 internal PGS iterations. Sixteen substeps (the old setting) fed energy
 /// into impacts — the Basic car rebounded off a wall at −7.6 m/s (the original stops dead) and standing corpus
-/// models toppled on landing — and the rebound grew with the substep count. Joint chains still need the 16
-/// iterations: 8 let the 3-wheeler's chain sag 0.4 m under its own weight.
+/// models toppled on landing — and the rebound grew with the substep count. Joint chains need the iterations: 8 let the
+/// 3-wheeler's chain sag 0.4 m, and 16 let its spring axle roll it over on landing (docs/measured.md, tier 3).
 pub const SOLVER_ITERATIONS: usize = 1;
 pub const PGS_ITERATIONS: usize = 48;
 /// brake: deceleration in g per brake unit and its cap (measured on the original, 4-wheel car)
@@ -61,13 +61,13 @@ pub const WHEEL_SPIN_PER_POWER: f64 = 1.0 / 20.6;
 /// 2026-11-01: a rolling wheel's fade zero point also grows with power (car1 drives each wheel at 10000–20000 and
 /// keeps accelerating past 180 rad/s); the 180 rad/s regime was measured at power 1000 and 2500 only
 pub const ROLL_FADE_SCALES: bool = true;
-/// wheel inertia as a fraction of ½mr² with m the hub+tyre mass: the air spin-up at power 10000 (34→207 rad/s in
-/// 12 frames) and the sliding spin-up on the ground both fit ≈ 0.7
+/// wheel inertia as a fraction of ½mr² with m the hub+tyre mass. The air spin-up alone fitted ≈ 0.7; 0.5 came with the
+/// landing-momentum transfer (2026-10-28). docs/measured.md records 0.35 for that change: not reconciled.
 pub const WHEEL_INERTIA_SCALE: f64 = 0.5;
 /// the motor torque reacts on the chassis (Wheel); RLW is the reactionless one
 pub const WHEEL_REACTION: bool = true;
 /// the reaction while the tyre touches the ground, as a fraction of the motor torque. In the original a car
-/// flooring it barely pitches (corpus car2: 0.01 rad); at full strength RigidCraft' car2 reared up and flipped,
+/// flooring it barely pitches (corpus car2: 0.01 rad); at full strength RigidCraft's car2 reared up and flipped,
 /// segway ran away and the Basic car wheelied over ramp crests. Turning it off fixes those but costs the
 /// steady-turn references (they lean on its rear load transfer: speed error 10.7 → 14.5%); a quarter keeps
 /// the fixes at 12.4% (2026-10-31, docs/measured.md tier 3). The airborne reaction (spawn-drop pitch) is full.
@@ -110,12 +110,8 @@ pub const TYRE_TOUCHDOWN_STEPS: u32 = 40;
 pub const MODEL_MAX_SPEED: f32 = 140.0;
 /// spec: 6 power = 1 N
 pub const JET_NEWTON_PER_POWER: f64 = 1.0 / 6.0; // measured 2026-11-01 (rc_models37.sh): two flat Jets lifting a 98.7 kg core leave the ground at power 3000 each but not 2800 (1/6 N per power: 2904), and climb slowly at 0.163 N/power before the plates' drag grows; the 2026-10-28 0.145 came from a jet-pushed wheeled car whose mass was underestimated. tp-2 hovers on 6 power per newton
-/// plate aero (per 1 m² tile): broadside drag N per (m/s)², and the lift slope N per (m/s)² per sin α.
-/// ½ρ·Cd≈0.7 and ½ρ·2π≈3.8 for air; the original's numbers are unknown. (Only the 'pow' law is ported.)
-pub const AIR_DRAG: f64 = 0.7;
 /// isotropic drag per tile: N per (m/s)² per unit coefficient (a guess; 20 chips ≈ 1.8 kN at 30 m/s)
 pub const ISO_DRAG: f64 = 0.0; // 0 = off: it kept tonbo and the plane sample from taking off; kept as an experiment knob
-pub const LIFT_SLOPE: f64 = 3.8;
 /// Airborne twin-jet measurements at 0–90° incidence (docs/measured.md).
 /// The leading normal force is proportional to speed² · sin(incidence)^1.5;
 /// its projection along the airflow supplies one additional sine factor.
@@ -219,7 +215,6 @@ pub const FUEL_PER_POWER_WHEEL: f64 = 0.025;
 pub const FUEL_PER_POWER_JET: f64 = 0.1; // measured: a jet at 10000 burns 1000 per frame (the readme's efficiency 10); wheels burn power/40, not /30
 pub const FUEL_PER_ARM_CHARGE: f64 = 1.0;
 pub const REGULATION_DEFAULTS: [(&str, f64); 8] = [("G", 1.0), ("A", 1.0), ("T", 1.0), ("J", 0.0), ("U", 0.0), ("C", 1.0), ("S", 1.0), ("E", 1.0)];
-pub const ARM_SHELL_MASS: f64 = 2.0;
 pub const ARM_SHELL_LIFE: u64 = 4 * 60;
 pub const ARM_ARMED_AFTER_TICK: u64 = 150 * 2;
 
@@ -590,11 +585,6 @@ impl World {
         let h = b.body;
         if let Some(body) = self.world.bodies.get_mut(h) {
             body.set_body_type(if fixed { RigidBodyType::Fixed } else { RigidBodyType::Dynamic }, true);
-        }
-    }
-    pub fn clear_balls(&mut self) {
-        for b in std::mem::take(&mut self.balls) {
-            self.world.remove_body(b.body);
         }
     }
 

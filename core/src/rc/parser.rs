@@ -285,8 +285,9 @@ fn tokenize(src: &[u16]) -> Vec<Tok> {
     toks
 }
 
-/// Skip quoted text or comments without treating their braces as section delimiters.
-fn literal_end(src: &[u16], i: usize) -> Option<usize> {
+/// Skip quoted text or comments without treating their braces as section delimiters. Inside the Lua block (`lua`)
+/// `//` is integer division, not a comment.
+fn literal_end(src: &[u16], i: usize, lua: bool) -> Option<usize> {
     let quote = src[i];
     if quote == u('"') || quote == u('\'') {
         let mut j = i + 1;
@@ -322,7 +323,7 @@ fn literal_end(src: &[u16], i: usize) -> Option<usize> {
             });
         }
     }
-    if comment || starts_with(src, i, "//") {
+    if comment || (!lua && starts_with(src, i, "//")) {
         return Some(index_of(src, &[u('\n')], i).unwrap_or(src.len()));
     }
     if starts_with(src, i, "/*") {
@@ -352,7 +353,7 @@ fn find_raw_blocks(src: &[u16]) -> Result<Vec<RawBlock>> {
     let mut blocks = Vec::new();
     let mut i = 0;
     while i < src.len() {
-        if let Some(skipped) = literal_end(src, i) {
+        if let Some(skipped) = literal_end(src, i, false) {
             i = skipped;
             continue;
         }
@@ -375,8 +376,9 @@ fn find_raw_blocks(src: &[u16]) -> Result<Vec<RawBlock>> {
         i += 1;
         let line = lines_before(src, start);
         let mut depth = 1;
+        let lua = name.eq_ignore_ascii_case("lua");
         while i < src.len() && depth > 0 {
-            if let Some(skip) = literal_end(src, i) {
+            if let Some(skip) = literal_end(src, i, lua) {
                 i = skip;
                 continue;
             }

@@ -97,8 +97,8 @@ pub extern "C" fn core_free(id: u32) {
     drop(old);
 }
 
-/// Parse and start a model from its `.rc` source (assemble, bodies, script, OnInit); `no_course` != 0 gives bare
-/// ground. 0 on success, 1 when the model failed to parse or assemble (message in `core_error`); a script error
+/// Parse and start a model from its `.rc` source (assemble, bodies, script, OnInit); `flags` bit 0 leaves out the
+/// course, bit 1 the ground. 0 on success, 1 when the model failed to parse or assemble (message in `core_error`); a script error
 /// leaves the model running without its script (`core_error`, header slot 16).
 ///
 /// # Safety

@@ -206,3 +206,40 @@ if x then
 ", 4).unwrap();
     assert!(e.contains("line "), "{e}");
 }
+
+#[test]
+fn the_console_at_a_breakpoint_keeps_what_the_frame_assigned() {
+    let src = model("function OnFrame()\n  ENGINE = 400\n  local x = 1\n  out(0, ENGINE)\nend");
+    let line = src.lines().position(|l| l.contains("local x")).unwrap() as i64 + 1;
+    let mut sim = Simulation::load(&src, PhysicsOptions { no_course: true, ..Default::default() }).unwrap();
+    sim.set_breakpoints(vec![Breakpoint { line, after: 1, ..Default::default() }]);
+    assert!(!sim.step());
+    assert_eq!(sim.eval_lua("1 + 1").unwrap(), "2");
+    sim.set_breakpoints(Vec::new());
+    assert!(sim.step());
+    assert_eq!(sim.out[0], "400");
+}
+
+#[test]
+fn a_reset_at_a_breakpoint_drops_the_suspended_frame() {
+    let src = model("function OnFrame()\n  count = (count or 0) + 1\n  local x = 1\n  out(0, count)\nend");
+    let line = src.lines().position(|l| l.contains("local x")).unwrap() as i64 + 1;
+    let mut sim = Simulation::load(&src, PhysicsOptions { no_course: true, ..Default::default() }).unwrap();
+    sim.set_breakpoints(vec![Breakpoint { line, after: 1, ..Default::default() }]);
+    assert!(!sim.step());
+    sim.reset();
+    assert!(!sim.mid_frame());
+    sim.set_breakpoints(Vec::new());
+    // the next step is a whole frame from the top, not the tail of the frame before the reset
+    assert!(sim.step());
+    assert_eq!(sim.out[0], "2");
+    assert_eq!(sim.ticks(), 1.0);
+}
+
+#[test]
+fn integer_division_in_the_lua_block_is_not_a_comment() {
+    let src = model("function OnFrame() local t = { 7 // 2 } out(0, t[1]) end");
+    let mut sim = Simulation::load(&src, PhysicsOptions { no_course: true, ..Default::default() }).unwrap();
+    assert!(sim.step());
+    assert_eq!(sim.out[0], "3");
+}

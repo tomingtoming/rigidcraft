@@ -132,7 +132,12 @@ impl World {
                     let mag = sl.hypot(vl);
                     slide_dir = Some((sl / mag, -vl / mag));
                     let inertia = WHEEL_INERTIA_SCALE * 0.5 * mass * r * r;
-                    let spin_next = tb.spin + (self.dt * (tau - ff * r - WHEEL_SPIN_DRAG * tb.spin)) / inertia;
+                    let mut spin_next = tb.spin + (self.dt * (tau - ff * r - WHEEL_SPIN_DRAG * tb.spin)) / inertia;
+                    // a brake locks the wheel, it cannot turn it against the road: on a surface with less grip than the brake
+                    // asks for, the old torque spun the wheel backwards and then drove the stopped car into reverse
+                    if brake > 0.0 && power == 0.0 && spin_next * vf < 0.0 {
+                        spin_next = 0.0;
+                    }
                     let slip_next = spin_next * r - vf;
                     if (slip.abs() > 0.1 && slip * slip_next < 0.0) || (slip_next.abs() < 0.05 && (tau / r).abs() <= limit) {
                         // the slip closed within this step: the ground force is whatever brought the wheel from its spin

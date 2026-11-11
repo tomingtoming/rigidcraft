@@ -129,9 +129,6 @@ impl World {
             }
         }
         // simultaneous servos: the whole step goes to the subtree; balance_servo_pose then removes the net motion
-        if delta.abs() < 1e-6 {
-            return;
-        }
         let rot = Quat::from_axis_angle(axis_w, delta);
         for h in sub {
             let b = self.world.bodies.get_mut(h).unwrap();

@@ -46,7 +46,6 @@ fn drive(runs: &Path, snap: &str, n: &str, mode: &str, log: &Path) {
             return;
         }
     };
-    rigidcraft_core::sim::seed_random(1);
     let mut sim = match Simulation::load(&source, opts()) {
         Ok(s) => s,
         Err(e) => {
@@ -88,7 +87,6 @@ fn geom(runs: &Path, snap: &str, n: &str) {
             return;
         }
     };
-    rigidcraft_core::sim::seed_random(1);
     let mut sim = match Simulation::load(&source, opts()) {
         Ok(s) => s,
         Err(e) => {

@@ -70,4 +70,11 @@ describe('parseRc', () => {
     expect(evalExpr('(1+2)*3', env)).toBe(9);
     expect(evalExpr('NOPE', env)).toBe(0);
   });
+
+  it('reads // inside the Lua block as integer division, not a comment', () => {
+    const model = parseRc('Body { Core(){} }\nLua {\n  local t = { 7 // 2 }\n}\n');
+    expect(model.script?.source).toContain('{ 7 // 2 }');
+    // outside Lua it still starts a comment, so the brace after it does not count
+    expect(parseRc('Body { Core(){} // }\n}\n').body).toBeTruthy();
+  });
 });

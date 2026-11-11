@@ -245,7 +245,7 @@ impl RcScript {
                 },
                 Stmt::Print(row, items) => {
                     let r = num(&evaluate(row, host, &locals)).floor();
-                    let r = if r.is_nan() { f64::NAN } else { r.clamp(0.0, 24.0) };
+                    let r = if r.is_nan() { f64::NAN } else { r.clamp(0.0, (crate::scripting::lua::OUT_ROWS - 1) as f64) };
                     let text: String = items
                         .iter()
                         .map(|i| match evaluate(i, host, &locals) {

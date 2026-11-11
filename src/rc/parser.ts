@@ -125,8 +125,9 @@ function tokenize(src: string): Tok[] {
   return toks;
 }
 
-/** Skip quoted text or comments without treating their braces as section delimiters. */
-function literalEnd(src: string, i: number): number | null {
+/** Skip quoted text or comments without treating their braces as section delimiters. Inside the Lua block (`lua`)
+ *  `//` is integer division, not a comment. */
+function literalEnd(src: string, i: number, lua = false): number | null {
   const quote = src[i];
   if (quote === '"' || quote === "'") {
     let j = i + 1;
@@ -140,7 +141,7 @@ function literalEnd(src: string, i: number): number | null {
     const end = src.indexOf(`]${long[1]}]`, start + long[0].length);
     return end < 0 ? src.length : end + long[0].length;
   }
-  if (comment || src.startsWith('//', i)) { const end = src.indexOf('\n', i); return end < 0 ? src.length : end; }
+  if (comment || (!lua && src.startsWith('//', i))) { const end = src.indexOf('\n', i); return end < 0 ? src.length : end; }
   if (src.startsWith('/*', i)) { const end = src.indexOf('*/', i + 2); return end < 0 ? src.length : end + 2; }
   return null;
 }
@@ -160,8 +161,9 @@ export function findBlocks(src: string): { name: string; inner: string; line: nu
     if (src[i] !== '{') continue;
     const open = i++, line = src.slice(0, start).split('\n').length;
     let depth = 1;
+    const lua = name.toLowerCase() === 'lua';
     while (i < src.length && depth) {
-      const skip = literalEnd(src, i);
+      const skip = literalEnd(src, i, lua);
       if (skip !== null) { i = skip; continue; }
       if (src[i] === '{') depth++;
       if (src[i] === '}') depth--;

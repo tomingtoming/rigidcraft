@@ -1,7 +1,7 @@
 //! Stage 2a check (core/PORT.md): the Rust physics world against the TypeScript `PhysicsWorld`, both run on every
 //! corpus model without its script (oracle: frozen output of the removed TypeScript core, `tools/export-physics-oracle.ts` in git history; JSON in
-//! `D:/rigidcraft-models/quarantine/oracle-physics`, or `RIGIDCRAFT_PHYSICS_ORACLE`). Without the oracle the test passes
-//! with a message.
+//! `D:/rigidcraft-models/quarantine/oracle-physics`, or `RIGIDCRAFT_PHYSICS_ORACLE`). The oracle is not in the repository,
+//! so the test is ignored by default: run it with `-- --ignored`, where it fails without the directory.
 //!
 //! rapier3d 0.36 and rapier3d-compat 0.21 are not bit-identical engines, so trajectories drift apart and chaotic
 //! models diverge; the hard requirements are the geometry right after the build and after the first frame, and no
@@ -120,11 +120,9 @@ fn oracle_dir() -> Option<PathBuf> {
 }
 
 #[test]
+#[ignore = "needs the frozen physics oracle JSON"]
 fn physics_matches_the_typescript_oracle() {
-    let Some(dir) = oracle_dir() else {
-        eprintln!("no physics oracle (frozen oracle JSON not found); skipped");
-        return;
-    };
+    let Some(dir) = oracle_dir() else { panic!("no physics oracle (frozen oracle JSON not found)") };
     let mut files: Vec<PathBuf> = std::fs::read_dir(&dir).unwrap().filter_map(|e| e.ok().map(|e| e.path())).filter(|p| p.extension().is_some_and(|x| x == "json")).collect();
     files.sort_by_key(|p| p.file_stem().and_then(|s| s.to_str()).and_then(|s| s.parse::<u32>().ok()).unwrap_or(u32::MAX));
     let mut rows = Vec::new();
