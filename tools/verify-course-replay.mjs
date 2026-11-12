@@ -6,7 +6,9 @@ export async function verifyCourseReplay(link, time, rows = []) {
   // Re-run the same link in the other browser engines. Fast-forward the physics
   // to just before the finish, then let the normal UI evaluate the goal and time.
   for (const engine of [firefox, webkit]) {
-    const receiver = await engine.launch();
+    // Firefox refuses WebGL2 on a machine without a GPU ("AllowWebgl2:false restricts context creation", seen on the CI
+    // runner): force it on, so it renders in software there as Chromium does with SwiftShader.
+    const receiver = await engine.launch(engine === firefox ? { firefoxUserPrefs: { 'webgl.force-enabled': true } } : {});
     try {
       const tab = await receiver.newPage();
       await tab.goto(link);

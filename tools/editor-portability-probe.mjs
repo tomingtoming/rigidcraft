@@ -2,7 +2,9 @@ import {firefox, webkit} from 'playwright';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 export async function runPortabilityProbe(engine) {
-const browser=await {firefox,webkit}[engine].launch();
+// Firefox refuses WebGL2 on a machine without a GPU ("AllowWebgl2:false restricts context creation", seen on the CI
+// runner): force it on, so it renders in software there as Chromium does with SwiftShader.
+const browser=await {firefox,webkit}[engine].launch(engine==='firefox'?{firefoxUserPrefs:{'webgl.force-enabled':true}}:{});
 try {
  const page=await browser.newPage({viewport:{width:1000,height:800}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));

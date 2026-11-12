@@ -34,7 +34,9 @@ async function record(page, setup){
  return {trace, url: await page.inputValue('#share-url')};
 }
 async function replay(type, url){
- const browser=await type.launch();
+ // Firefox refuses WebGL2 on a machine without a GPU ("AllowWebgl2:false restricts context creation", seen on the CI
+ // runner): force it on, so it renders in software there as Chromium does with SwiftShader.
+ const browser=await type.launch(type===firefox?{firefoxUserPrefs:{'webgl.force-enabled':true}}:{});
  try{
   const page=await browser.newPage();
   const errors=[]; page.on('pageerror',e=>errors.push(e.message));
