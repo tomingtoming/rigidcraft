@@ -7,7 +7,13 @@ try {
  await page.goto(process.argv[2]??'http://127.0.0.1:5175/'); await page.waitForFunction(()=>window.__sim);
  await page.fill('#source','Body { Core(){ E:Chip(){E:Chip(){E:Chip(){E:Chip(){E:Chip(){E:Chip(){E:Chip()}}}}}} W:Chip(){W:Chip(){W:Chip(){W:Chip(){W:Chip(){W:Chip(){W:Chip()}}}}}} } }');
  await page.click('#build'); await page.click('#frame-model');
- const settle=()=>page.waitForTimeout(800);
+ // The camera eases toward its goal a fixed fraction per rendered frame, so the time it takes depends on the frame
+ // rate: wait until it has stopped (three frames without moving), not for a fixed 800 ms.
+ const settle=()=>page.waitForFunction(()=>{
+  const w=/** @type {any} */ (window), c=window.__scene.camera.position, k=w.__settle??={p:null,still:0};
+  const moved=k.p?c.distanceTo(k.p):Infinity; k.p=c.clone(); k.still=moved<1e-3?k.still+1:0;
+  if(k.still<3)return false; w.__settle=undefined; return true;
+ },undefined,{polling:'raf',timeout:60000});
  const extent=()=>page.evaluate(()=>{
   const s=window.__scene; s.group.updateMatrixWorld(true); s.camera.updateMatrixWorld(); let max=0;
   s.group.traverse(/** @param {any} mesh */ mesh=>{
@@ -36,7 +42,7 @@ try {
  assert.ok(Math.abs(await page.evaluate(()=>window.__scene.camDist)-before)<1e-8,'manual zoom preserved');
  await page.click('#run'); await page.waitForFunction(()=>!document.body.classList.contains('building'));
  const runningDistance=await page.evaluate(()=>window.__scene.camDist);
- await page.setViewportSize({width:850,height:1000}); await settle();
+ await page.setViewportSize({width:850,height:1000}); await page.waitForTimeout(800); // running: the camera follows the model
  assert.equal(await page.evaluate(()=>window.__scene.camDist),runningDistance,'runtime camera distance unchanged');
  console.log('Framing: complete geometry remains visible across wide, narrow desktop and mobile viewports');
 } finally {await browser.close();}
