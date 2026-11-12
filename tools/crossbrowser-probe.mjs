@@ -38,9 +38,19 @@ async function replay(type, url){
  try{
   const page=await browser.newPage();
   const errors=[]; page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(url); await page.waitForFunction(()=>window.__sim?.replaying,null,{timeout:60000});
-  await page.evaluate(hook);
-  await page.waitForFunction(f=>window.__sim.frame>=f,FRAMES,{timeout:120000});
+  /** @type {string[]} */
+  const log=[]; page.on('console',m=>log.push(`${m.type()}: ${m.text()}`)); page.on('requestfailed',r=>log.push(`request failed: ${r.url().slice(0,120)} ${r.failure()?.errorText}`));
+  const started=Date.now();
+  try{
+   await page.goto(url); await page.waitForFunction(()=>window.__sim?.replaying,null,{timeout:60000});
+   await page.evaluate(hook);
+   await page.waitForFunction(f=>window.__sim.frame>=f,FRAMES,{timeout:120000});
+  }catch(e){
+   // say why before failing: a slow browser and a page that never started look the same from the timeout alone
+   const state=await page.evaluate(()=>({sim:!!window.__sim,replaying:window.__sim?.replaying,frame:window.__sim?.frame,status:document.getElementById('status')?.textContent,ready:document.readyState,webgl:!!document.createElement('canvas').getContext('webgl2')})).catch(err=>({evaluate:String(err)}));
+   console.error(JSON.stringify({browser:type.name(),version:browser.version(),seconds:(Date.now()-started)/1000,state,errors,log:log.slice(-30)},null,1));
+   throw e;
+  }
   return {trace: await page.evaluate(()=>window.__trace), errors};
  }finally{await browser.close();}
 }
